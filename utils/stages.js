@@ -140,20 +140,6 @@ export async function getStage({ from }) {
   }
 }
 
-// export async function updateStageInFirestore({ from, newStage }) {
-//   try {
-//     // Update the stage field in the existing document
-//     await storageCollection.doc(from).update({
-//       stage: newStage,
-//     });
-
-//     console.log(`Stage updated successfully for user ${from}`);
-//   } catch (error) {
-//     console.error('Error updating stage in Firestore:', error);
-//     throw error; // You may want to handle the error appropriately in your application
-//   }
-// }
-
 
 export async function updateStageInFirestore({ from, updatedFields }) {
   try {
@@ -199,27 +185,47 @@ export async function getFieldValueFromFirestore(docId, fieldName) {
 }
 
 
+export async function doesDocumentExist(docId) {
+  try {
+    // Validate parameters
+    if (typeof docId !== 'string') {
+      throw new Error('Invalid parameter type. Expecting a string.');
+    }
+
+    // Retrieve the document from Firestore
+    const docSnapshot = await storageCollection.doc(docId).get();
+
+    // Check if the document exists
+    return docSnapshot.exists;
+  } catch (error) {
+    console.error('Error checking document existence in Firestore:', error);
+    throw error; // You may want to handle the error appropriately in your application
+  }
+}
 
 
-// export function getStage({ from }) {
-//   if (storage[from]) {
+export async function getStorageIDByDriver(driverValue) {
+  try {
+    // Validate parameters
+    if (typeof driverValue !== 'string') {
+      throw new Error('Invalid parameter type. Expecting a string.');
+    }
 
-//     return storage[from].stage;
+    // Query Firestore to find the document with the specified driver value
+    const querySnapshot = await storageCollection.where('driver', '==', driverValue).get();
 
-//   } else {
+    // Check if any documents match the query
+    if (!querySnapshot.empty) {
+      // Assuming there is only one matching document; if there are multiple, adjust as needed
+      const storageID = querySnapshot.docs[0].id;
+      return storageID;
+    } else {
+      return null; // Document not found
+    }
+  } catch (error) {
+    console.error('Error retrieving storageID from Firestore by driver value:', error);
+    throw error; // You may want to handle the error appropriately in your application
+  }
+}
 
-//     storage[from] = {
-//       stage: 0,
-//       itens: [],
-//       address: '',
-//       errands:'',
-//       driver:'',
-//       order_no:0,
-//       rating:0,
-//       Comment:" "
-//     };
 
-//     return storage[from].stage;
-
-//   }
-// }

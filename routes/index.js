@@ -4,6 +4,10 @@ import { stages, getStage } from '../utils/stages.js';
 import { driver } from '../utils/driver.js';
 import { menu } from '../utils/menu.js';
 import { restaurants } from '../utils/restaurants.js';
+import { getFieldValueFromFirestore } from "../utils/stages.js";
+import { updateStageInFirestore } from "../utils/stages.js";
+import { doesDocumentExist } from "../utils/stages.js";
+import { getStorageIDByDriver } from "../utils/stages.js";
 import { db } from '../utils/firebase_config.js';
 
 
@@ -171,92 +175,116 @@ router.post('/callback',async (req, res) => {
                     if(incomingMessage.button_reply){
 
 
-                        if(storage[incomingMessage.button_reply.id.slice(0,11)]){
+                        doesDocumentExist(incomingMessage.button_reply.id.slice(0,11))
 
-                            let number  = incomingMessage.button_reply.id.slice(0,11);
+                        
+                       
 
-                            if(storage[number].driver.trim() === ""){
-
-
-                                if(getStage({ from: number})==4){
-
-                                    storage[number].driver = recipientPhone
-                                    
-                                    console.log(storage[number].driver)
-    
-                                        const messageResponse = stages[17].stage.exec({
-                                            from: number,
-                                            message: message,
-                                            Whatsapp:Whatsapp,
-                                            recipientName:recipientName,
-                                            incomingMessage:incomingMessage
-                                        });
-                    
-                                
-                                }
-
-
-                            }
+                        .then(async (exists) => {
+                            if (exists) {
 
                           
-        
-                            if(incomingMessage.button_reply.id.slice(12,18)=='accept' && (getStage({ from: number})==9 || getStage({ from: number})==5)){
-        
-                                var The_messeage;
 
-                                if(getStage({ from: number})==9){
+                            const fromData = { from: incomingMessage.button_reply.id.slice(0,11) };
 
-                                   The_messeage =  'Request Summery\n\n'+'REQUEST : '+storage[number].errands+'\n\nADDRESS : '+storage[number].address+''
-                                 
-                                }else if(getStage({ from: number})==5){
+                            getStage(fromData)
+                              .then(async (currentStage) => {
+                                console.log('Current Stage:', currentStage);
+                            
+                                // Check if the currentStage is 9 or 5
+                                if (incomingMessage.button_reply.id.slice(12,18)=='accept' && currentStage === 9 || currentStage === 5) {
 
-                                    const totalPrice = storage[number].itens.reduce((total, item) => {
-                                        // Extract the numeric part of the price and convert it to a number
-                                        const itemPrice = Number(item.price.replace('R', ''));
-                                        
-                                        // Add the current item's price to the total
-                                        return total + itemPrice;
-                                      }, 0);
+                                    var The_messeage;
 
-                                    The_messeage =  'Food Order Request\n\n'+'REQUEST : '+storage[number].errands+'\n\nADDRESS : '+storage[number].address+'\n\nDelivery Fee: R20 && Resturant Fee: '+totalPrice
-                                }
+                                                                    
+                                    var errands = await getFieldValueFromFirestore(number, "errands");
 
-                                storage[number].stage = 9;
+                                    var address = await getFieldValueFromFirestore(number, "address");
 
-                                console.log();
+                                    if(currentStage === 9 ){
 
-                                storage[number].driver = incomingMessage.from.phone;
-                                
-                                await Whatsapp.sendText({
-                                    message:The_messeage,
-                                    recipientPhone: incomingMessage.from.phone,
-                                });   
-        
-        
-                                await Whatsapp.sendSimpleButtons({
-                                    message: 'Have you arrived at '+storage[number].address,
-                                    recipientPhone: incomingMessage.from.phone,
-                                    listOfButtons: [
-                                        {
-                                            title: 'Yes I have arrived',
-                                            id:'DriverArrived',
-                                        },
+                                        The_messeage =  'Request Summery\n\n'+'REQUEST : '+errands+'\n\nADDRESS : '+address+''
+
+
+                                    }else if(currentStage==5){
+
+
+                                        const totalPrice = storage[number].itens.reduce((total, item) => {
+                                            // Extract the numeric part of the price and convert it to a number
+                                            const itemPrice = Number(item.price.replace('R', ''));
+                                            
+                                            // Add the current item's price to the total
+                                            return total + itemPrice;
+                                          }, 0);
+    
+                                        The_messeage =  'Food Order Request\n\n'+'REQUEST : '+errands+'\n\nADDRESS : '+address+'\n\nDelivery Fee: R20 && Resturant Fee: '+totalPrice
+
+
+                                    }
+
                                     
-                                    ]
-                                })
+                                //storage[number].stage = 9;
+
+
+                                //storage[number].driver = incomingMessage.from.phone;
+
+                                const updateParams = {
+                                    from: incomingMessage.button_reply.id.slice(0,11),
+                                    updatedFields: {
+                                      stage: 9,
+                                      driver:incomingMessage.from.phone
+                                      // Add more fields as needed
+                                    },
+                                  };
+                          
+                                  updateStageInFirestore(updateParams)
+                                    .then(async () => {
+                                        
+                                        await Whatsapp.sendText({
+                                            message:The_messeage,
+                                            recipientPhone: incomingMessage.from.phone,
+                                        });   
+
+                                        await Whatsapp.sendSimpleButtons({
+                                            message: 'Have you arrived at '+address,
+                                            recipientPhone: incomingMessage.from.phone,
+                                            listOfButtons: [
+                                                {
+                                                    title: 'Yes I have arrived',
+                                                    id:'DriverArrived',
+                                                },
+                                            
+                                            ]
+                                        })
+
+                                            
+                                         
+
+                                  
+                                    })
+                                    .catch((error) => {
+                                      console.error("Error:", error);
+                                    });
+                            
+        
+        
+                                                                                
+                                    var errands = await getFieldValueFromFirestore(incomingMessage.button_reply.id.slice(0,11), "errands");
+
+                                    var address = await getFieldValueFromFirestore(incomingMessage.button_reply.id.slice(0,11), "address");
         
                                 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
                                 
-                                const randomOrderNumber = generateRandomOrderNumber();
+                                  const randomOrderNumber = generateRandomOrderNumber();
 
                                     db.collection('Orders').doc(randomOrderNumber).set({
                                         Order_No: randomOrderNumber,
                                         Driver: driver[incomingMessage.from.phone].name,
                                         client: incomingMessage.button_reply.id.slice(0,11),
                                         type: "Errands",
-                                        item:storage[incomingMessage.button_reply.id.slice(0,11)].errands,
-                                        drop:storage[incomingMessage.button_reply.id.slice(0,11)].errands,
-                                        destination: storage[incomingMessage.button_reply.id.slice(0,11)].address,
+                                        item:errands,
+                                        drop:errands,
+                                        destination:address,
                                         status:"Driver going to client",
                                     })
                                         .then(() => {
@@ -266,35 +294,232 @@ router.post('/callback',async (req, res) => {
                                         console.error('Error adding document to Firestore:', error);
                                         });
 
-                                        storage[incomingMessage.button_reply.id.slice(0,11)].order_no=randomOrderNumber
 
-                                    await Whatsapp.sendText({
-                                        message:'Your orderNo#'+randomOrderNumber+' 🚗 Your driver is '+driver[incomingMessage.from.phone].name+' and he is on his way to you!🌟🏎️📍',
-                                        recipientPhone: incomingMessage.button_reply.id.slice(0,11),
-                                    }); 
+                                        var updatesomestuff = {
 
+                                            from: incomingMessage.button_reply.id.slice(0,11),
+                                            updatedFields: {
+                                                order_no: randomOrderNumber,
+                                            },
+                                          };
+                                      
+                                          updateStageInFirestore(updatesomestuff)
+                                            .then(async () => {
+
+                                                                                        
+                                                    await Whatsapp.sendText({
+                                                        message:'Your orderNo#'+randomOrderNumber+' 🚗 Your driver is '+driver[incomingMessage.from.phone].name+' and he is on his way to you!🌟🏎️📍',
+                                                        recipientPhone: incomingMessage.button_reply.id.slice(0,11),
+                                                    }); 
+
+
+                                            })
+
+                                            .catch((error) => {
+                                              console.error("Error:", error);
+                                            });
+
+
+                                     
+
+
+                                //   console.log('The stage is either 9 or 5.');
+                            
+                                } else {
+
+                                
+                                  //console.log('The stage is not 9 or 5.');
+                                 
+                                }
+                              })
+                              .catch((error) => {
+                                console.error('Error:', error);
+                              });
+
+
+
+                            
+                                let number  = incomingMessage.button_reply.id.slice(0,11);
+
+                                // if(storage[number].driver.trim() === ""){
+    
+    
+                                //     if(getStage({ from: number})==4){
+    
+                                //         storage[number].driver = recipientPhone
+                                        
+                                //         console.log(storage[number].driver)
+        
+                                //             const messageResponse = stages[17].stage.exec({
+                                //                 from: number,
+                                //                 message: message,
+                                //                 Whatsapp:Whatsapp,
+                                //                 recipientName:recipientName,
+                                //                 incomingMessage:incomingMessage
+                                //             });
+                        
+                                    
+                                //     }
+    
+    
+                                // }
+
+
+
+                            // Add your logic for when the document exists
+                            } else {
+
+
+                                
+                                const driverValueToSearch = recipientPhone;
+
+                                try {
+                                const storageID = await getStorageIDByDriver(driverValueToSearch);
+                                if (storageID !== null) {
+
+                                    console.log(`StorageID for driver ${driverValueToSearch}: ${storageID}`);
+
+                                    const customernumber = storageID
+
+
+                                    const fromData = { from:customernumber };
+       
+                                    getStage(fromData)
+                                   .then((currentStage) => {
+                   
+                   
+                                       console.log(currentStage)
+
+                                      // const currentStage = getStage({ from: customernumber});
+                   
+                                       const messageResponse = stages[currentStage].stage.exec({
+                   
+                                        from: recipientPhone,
+                                        message: message,
+                                        Whatsapp:Whatsapp,
+                                        recipientName:recipientName,
+                                        incomingMessage:incomingMessage,
+                                        customer:customernumber
+                                       });
+                   
+                   
+                                   })
+                                   .catch((error) => {
+                   
+                                       console.error('Error:', error);
+                   
+                                   });
+
+
+                            
+                                } else {
+                                    console.log(`No document found for driver ${driverValueToSearch}.`);
+                                }
+                                } catch (error) {
+                                console.error('Error:', error);
+                                }
+                            
+
+
+                                
+
+                        
+                            console.log(`Document with ID does not exist in Firestore.`);
+                            // Add your logic for when the document does not exist
                             }
+                        })
+                        .catch((error) => {
+                            console.error('Error:', error);
+                        });
+
+                       
+
+                        if(storage[incomingMessage.button_reply.id.slice(0,11)]){
+
+                            console.log("the best")
+
+
+                      
+
+        
+                            // if(incomingMessage.button_reply.id.slice(12,18)=='accept' && (getStage({ from: number})==9 || getStage({ from: number})==5)){
+        
+                            //     var The_messeage;
+
+                            //     if(getStage({ from: number})==9){
+
+                            //        The_messeage =  'Request Summery\n\n'+'REQUEST : '+storage[number].errands+'\n\nADDRESS : '+storage[number].address+''
+                                 
+                            //     }else if(getStage({ from: number})==5){
+
+                            //         const totalPrice = storage[number].itens.reduce((total, item) => {
+                            //             // Extract the numeric part of the price and convert it to a number
+                            //             const itemPrice = Number(item.price.replace('R', ''));
+                                        
+                            //             // Add the current item's price to the total
+                            //             return total + itemPrice;
+                            //           }, 0);
+
+                            //         The_messeage =  'Food Order Request\n\n'+'REQUEST : '+storage[number].errands+'\n\nADDRESS : '+storage[number].address+'\n\nDelivery Fee: R20 && Resturant Fee: '+totalPrice
+                            //     }
+
+                            //     storage[number].stage = 9;
+
+
+                            //     storage[number].driver = incomingMessage.from.phone;
+                                
+                            //     await Whatsapp.sendText({
+                            //         message:The_messeage,
+                            //         recipientPhone: incomingMessage.from.phone,
+                            //     });   
+        
+        
+                            //     await Whatsapp.sendSimpleButtons({
+                            //         message: 'Have you arrived at '+storage[number].address,
+                            //         recipientPhone: incomingMessage.from.phone,
+                            //         listOfButtons: [
+                            //             {
+                            //                 title: 'Yes I have arrived',
+                            //                 id:'DriverArrived',
+                            //             },
+                                    
+                            //         ]
+                            //     })
+        
+                            //     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                                
+                            //     const randomOrderNumber = generateRandomOrderNumber();
+
+                            //         db.collection('Orders').doc(randomOrderNumber).set({
+                            //             Order_No: randomOrderNumber,
+                            //             Driver: driver[incomingMessage.from.phone].name,
+                            //             client: incomingMessage.button_reply.id.slice(0,11),
+                            //             type: "Errands",
+                            //             item:storage[incomingMessage.button_reply.id.slice(0,11)].errands,
+                            //             drop:storage[incomingMessage.button_reply.id.slice(0,11)].errands,
+                            //             destination: storage[incomingMessage.button_reply.id.slice(0,11)].address,
+                            //             status:"Driver going to client",
+                            //         })
+                            //             .then(() => {
+                            //             console.log('Yes'); // Print 'Yes' when the document is successfully added
+                            //             })
+                            //             .catch(error => {
+                            //             console.error('Error adding document to Firestore:', error);
+                            //             });
+
+                            //             storage[incomingMessage.button_reply.id.slice(0,11)].order_no=randomOrderNumber
+
+                            //         await Whatsapp.sendText({
+                            //             message:'Your orderNo#'+randomOrderNumber+' 🚗 Your driver is '+driver[incomingMessage.from.phone].name+' and he is on his way to you!🌟🏎️📍',
+                            //             recipientPhone: incomingMessage.button_reply.id.slice(0,11),
+                            //         }); 
+
+                            // }
                             
                             
                         }else{
 
-                            if(getDriverByNumber(recipientPhone)){
-
-                                const customernumber = getDriverByNumber(recipientPhone)
-                                const currentStage = getStage({ from: customernumber});
-                
-                                const messageResponse = stages[currentStage].stage.exec({
-                                    from: recipientPhone,
-                                    message: message,
-                                    Whatsapp:Whatsapp,
-                                    recipientName:recipientName,
-                                    incomingMessage:incomingMessage,
-                                    customer:customernumber
-
-                                });
-
-
-                            }
+                        
                             
 
                         }

@@ -20,6 +20,7 @@ export const stageThree = {
 
    const total = storage[from].itens.length;
 
+   
    const order_summery =  `🗒️ *ORDER SUMMARY*: \n\n*${desserts}* \n Total amount: *${
     total * 6
   },00*.\n🚚 Delivery fee: R20. \n📍 Address:*${storage[from].address}* \n⏳ Delivery time: *50 minutes*. \n\n` +

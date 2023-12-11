@@ -1,43 +1,60 @@
-import { storage } from '../storage.js';
-import { updateDocument } from '../firebase_config.js'
+import { storage } from "../storage.js";
+import { updateDocument } from "../firebase_config.js";
+import { updateStageInFirestore } from "../stages.js";
+
+import { getFieldValueFromFirestore } from "../stages.js";
 
 export const stageten = {
+  async exec({ from, Whatsapp, customer, incomingMessage }) {
+    if (incomingMessage.button_reply) {
+      if (incomingMessage.button_reply.id === "arrievedatlocation") {
+        var order = await getFieldValueFromFirestore(customer, "order_no");
 
-  async exec({ from, Whatsapp,customer,incomingMessage}) {
+        const fieldsToUpdate = {
+          status:
+            "The driver has arrived at the location of the client errant/order location!",
+          // Add more fields as needed
+        };
 
-    if (incomingMessage.button_reply.id === 'arrievedatlocation') {
+        updateDocument("Orders", order, fieldsToUpdate);
 
-      storage[customer].stage = 11;
+        const updateParams = {
+          from: customer,
+          updatedFields: {
+            stage: 11,
+            // Add more fields as needed
+          },
+        };
 
-      const fieldsToUpdate = {
-        status: 'The driver has arrived at the location of the clinet errnad/order location!',
-        // Add more fields as needed
-      };
-      
-      updateDocument('Orders', storage[customer].order_no, fieldsToUpdate);
+        updateStageInFirestore(updateParams)
+          .then(async () => {
+            // Stage updated successfully
 
-      //storage[customer].errands
+            await Whatsapp.sendSimpleButtons({
+              message:
+                "Have you finished doing the Errand/fetching the Order ?",
+              recipientPhone: from,
+              listOfButtons: [
+                {
+                  title: "Yes",
+                  id: "arrievedatlocation",
+                },
+              ],
+            });
 
-        await Whatsapp.sendSimpleButtons({
-          message: 'Have you finished doing the Errand/fetching the Order ?',
-          recipientPhone: from,
-          listOfButtons: [
-              {
-                  title: 'Yes',
-                  id:'arrievedatlocation',
-              },
-        
-          ]
-      })
+            await Whatsapp.sendText({
+              message:
+                "🚗📍 The driver has arrived at the location of your errand/restaurant! 🌟🏠🍽️",
+              recipientPhone: customer,
+            });
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
 
-        await Whatsapp.sendText({
-          message: '🚗📍 The driver has arrived at the location of your errand/restaurant! 🌟🏠🍽️',
-          recipientPhone: customer,
-      }); 
-
-
+        //storage[customer].errands
+      }
+    } else {
     }
- 
   },
-  
 };
