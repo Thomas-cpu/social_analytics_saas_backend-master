@@ -1,0 +1,225 @@
+import {
+  initialStage,
+  stageOne,
+  stageTwo,
+  stageThree,
+  stageFour,
+  finalStage,
+  stagesix,
+  stageseven,
+  stageeight,
+  stagenine,
+  stageten,
+  stageeleven,
+  stageetwelve,
+  stagethirtteen,
+  stagefourteen,
+  stagefiveteen,
+  stagesixteen,
+  stageseventeen
+
+} from './stages/index.js';
+
+import { db } from './firebase_config.js';
+
+import { storage } from './storage.js';
+
+
+export const stages = [
+  {
+    descricao: 'Welcome',
+    stage: initialStage,
+  },
+  {
+    descricao: 'Menu',
+    stage: stageOne,
+  },
+  {
+    descricao: 'Address',
+    stage: stageTwo,
+  },
+  {
+    descricao: 'Bill',
+    stage: stageThree,
+  },
+  {
+    descricao: 'New Order',
+    stage: stageFour,
+  },
+  {
+    descricao: 'Assistent',
+    stage: finalStage,
+  },
+  {
+    descricao: 'Address',
+    stage: stagesix,
+  },
+  {
+    descricao: 'confirm',
+    stage: stageseven,
+  },
+  {
+    descricao: 'Looking for driver',
+    stage: stageeight,
+  },
+  {
+    descricao: 'Out come of driver',
+    stage: stagenine,
+  },
+  {
+    descricao: 'Getting respnonse from driver',
+    stage: stageten,
+  },
+  {
+    descricao: 'Getting stage from feedback from driver',
+    stage: stageeleven,
+  },
+  {
+    descricao: 'Getting stage from feedback from driver',
+    stage: stageetwelve,
+  },
+  {
+    descricao: 'Getting stage from feedback from driver',
+    stage: stagethirtteen,
+  },
+  {
+    descricao: 'Getting stage from feedback from driver',
+    stage: stagefourteen,
+  },
+  {
+    descricao: 'comment',
+    stage: stagefiveteen,
+  },
+  {
+    descricao: 'finish order',
+    stage: stagesixteen,
+  },
+  {
+    descricao: 'Looking for driver for resturant',
+    stage: stageseventeen,
+  },
+
+];
+
+
+
+
+// Assuming storage is a Firestore collection named 'storage'
+const storageCollection = db.collection('storage');
+
+export async function getStage({ from }) {
+  try {
+    const doc = await storageCollection.doc(from).get();
+
+    if (doc.exists) {
+
+      console.log("No")
+
+      return doc.data().stage;
+
+    } else {
+      // If the document doesn't exist, create a new one and return the new stage value
+      const defaultData = {
+        stage: 0,
+        items: [],
+        address: '',
+        errands: '',
+        driver: '',
+        order_no: 0,
+        rating: 0,
+        Comment: ' ',
+      };
+
+      await storageCollection.doc(from).set(defaultData);
+
+      return defaultData.stage; // Return the new stage value
+    }
+  } catch (error) {
+    console.error('Error retrieving stage from Firestore:', error);
+    throw error; // You may want to handle the error appropriately in your application
+  }
+}
+
+// export async function updateStageInFirestore({ from, newStage }) {
+//   try {
+//     // Update the stage field in the existing document
+//     await storageCollection.doc(from).update({
+//       stage: newStage,
+//     });
+
+//     console.log(`Stage updated successfully for user ${from}`);
+//   } catch (error) {
+//     console.error('Error updating stage in Firestore:', error);
+//     throw error; // You may want to handle the error appropriately in your application
+//   }
+// }
+
+
+export async function updateStageInFirestore({ from, updatedFields }) {
+  try {
+    // Validate parameters
+    if (typeof from !== 'string' || typeof updatedFields !== 'object') {
+      throw new Error('Invalid parameter types. Expecting strings and an object.');
+    }
+
+    // Update the specified fields in the existing document
+    await storageCollection.doc(from).update(updatedFields);
+
+    console.log(`Fields updated successfully for user ${from}. Updated fields:`, updatedFields);
+  } catch (error) {
+    console.error('Error updating fields in Firestore:', error);
+    throw error; // You may want to handle the error appropriately in your application
+  }
+}
+
+export async function getFieldValueFromFirestore(docId, fieldName) {
+  try {
+    // Validate parameters
+    if (typeof docId !== 'string' || typeof fieldName !== 'string') {
+      throw new Error('Invalid parameter types. Expecting strings.');
+    }
+
+    // Retrieve the document from Firestore
+    const docSnapshot = await storageCollection.doc(docId).get();
+
+    // Check if the document exists
+    if (docSnapshot.exists) {
+      // Get the field value
+      const fieldValue = docSnapshot.get(fieldName);
+
+      // Return the field value
+      return fieldValue;
+    } else {
+      throw new Error(`Document with ID ${docId} not found in Firestore.`);
+    }
+  } catch (error) {
+    console.error('Error retrieving field value from Firestore:', error);
+    throw error; // You may want to handle the error appropriately in your application
+  }
+}
+
+
+
+
+// export function getStage({ from }) {
+//   if (storage[from]) {
+
+//     return storage[from].stage;
+
+//   } else {
+
+//     storage[from] = {
+//       stage: 0,
+//       itens: [],
+//       address: '',
+//       errands:'',
+//       driver:'',
+//       order_no:0,
+//       rating:0,
+//       Comment:" "
+//     };
+
+//     return storage[from].stage;
+
+//   }
+// }
