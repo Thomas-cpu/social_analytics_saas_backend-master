@@ -41,6 +41,7 @@ export const stageFour = {
 
   exec({from,incomingMessage,message,Whatsapp,recipientName}) {
 
+
    
     Object.keys(driver).map(async (value) => {
       const element = driver[value];
@@ -54,10 +55,10 @@ export const stageFour = {
                   title: 'Accept',
                   id:from+'@'+'accept',
               },
-              {
-                title: 'Reject',
-                id:from+'@'+'rejected',
-            },
+            //   {
+            //     title: 'Reject',
+            //     id:from+'@'+'rejected',
+            // },
         
           ]
 

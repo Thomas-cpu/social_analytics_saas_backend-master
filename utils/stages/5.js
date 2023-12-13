@@ -5,6 +5,8 @@
 import { menu } from '../menu.js';
 import { storage } from '../storage.js';
 import { driver } from '../driver.js';
+import { updateStageInFirestore } from "../stages.js";
+import { getFieldValueFromFirestore } from "../stages.js";
 
 function getDescriptionById(object, id) {
   for (const location in object) {
@@ -33,50 +35,67 @@ function findItemById(id) {
 
 
 export const finalStage = {
+
   async exec({ from,incomingMessage,message,Whatsapp,recipientName }) {
+
+
+    const afterAt = incomingMessage.button_reply.id.split('@')[1];
+
+    const result = afterAt.split('&')[0];
     
-      //console.log('There another one now');
+      const updateParams = {
+        from: incomingMessage.button_reply.id.split('@')[0],
+        updatedFields: {
+          stage: 5,
+          errands :"an Order at"+findItemById(result)
+          // Add more fields as needed
+        },
+      };
 
-      storage[incomingMessage.button_reply.id.split('@')[0]].stage = 5;
+      updateStageInFirestore(updateParams)
+        .then(async () => {
+          try {
+            //storage[from].stage = 1;
 
+            var driver = await getFieldValueFromFirestore(incomingMessage.button_reply.id.split('@')[0], "driver");
 
-
-      const afterAt = incomingMessage.button_reply.id.split('@')[1];
-
-      const result = afterAt.split('&')[0];
-
-
-      await Whatsapp.sendText({
-        message: "Your is order "+getDescriptionById(menu,result)+" complete looking for Driver for collection",
-        recipientPhone: incomingMessage.button_reply.id.split('@')[0],
-    });
-    
-
-    storage[incomingMessage.button_reply.id.split('@')[0]].errands ="an Order at"+findItemById(result);
-
-           console.log(incomingMessage.button_reply.id.split('@')[0])
-
-           console.log(storage[incomingMessage.button_reply.id.split('@')[0]].driver)
-           
-        await Whatsapp.sendSimpleButtons({
-
-              message: 'Go to '+storage[incomingMessage.button_reply.id.split('@')[0]].address+" fetch money to pay for an order at "+findItemById(result)+" and return it to the client",
-              recipientPhone: storage[incomingMessage.button_reply.id.split('@')[0]].driver,
-              listOfButtons: [
-                  {
-                      title: 'Accept',
-                      id:incomingMessage.button_reply.id.split('@')[0]+'@'+'accept',
-                  },
-                  {
-                    title: 'Reject',
-                    id:incomingMessage.button_reply.id.split('@')[0]+'@'+'rejected',
-                },
-            
-              ]
+            var address = await getFieldValueFromFirestore(incomingMessage.button_reply.id.split('@')[0], "address");
 
           
-          });
+              await Whatsapp.sendText({
+                message: "Your is order "+getDescriptionById(menu,result)+" complete looking for Driver for collection",
+                recipientPhone: incomingMessage.button_reply.id.split('@')[0],
+            });
+            
 
+                  
+          await Whatsapp.sendSimpleButtons({
+
+                message: 'Go to '+address+" fetch money to pay for an order at "+findItemById(result)+" and return it to the client",
+                recipientPhone: driver,
+                listOfButtons: [
+                    {
+                        title: 'Going there now',
+                        id:incomingMessage.button_reply.id.split('@')[0]+'@'+'accept',
+                    },
+                  //   {
+                  //     title: 'Reject',
+                  //     id:incomingMessage.button_reply.id.split('@')[0]+'@'+'rejected',
+                  // },
+              
+                ]
+
+            
+            });
+
+          
+
+
+          } catch (error) {
+            console.error("Error in initialStage.exec:", error);
+            // Handle the error as needed, such as logging, sending a response, etc.
+          }
+        })
 
 
 

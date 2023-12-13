@@ -104,6 +104,8 @@ export const stageOne = {
           });
       }
     } else {
+
+      
       const updateParams = {
         from: from,
         updatedFields: {
@@ -139,7 +141,7 @@ export const stageOne = {
             // Handle the error as needed, such as logging, sending a response, etc.
           }
         })
-        
+
         .catch((error) => {
           console.error("Error:", error);
         });

@@ -107,6 +107,10 @@ export const stages = [
 // Assuming storage is a Firestore collection named 'storage'
 const storageCollection = db.collection('storage');
 
+const driver = db.collection('storage');
+
+const drivers = db.collection('drivers');
+
 export async function getStage({ from }) {
   try {
     const doc = await storageCollection.doc(from).get();
@@ -184,6 +188,31 @@ export async function getFieldValueFromFirestore(docId, fieldName) {
   }
 }
 
+export async function getdriverdetails(docId, fieldName) {
+  try {
+    // Validate parameters
+    if (typeof docId !== 'string' || typeof fieldName !== 'string') {
+      throw new Error('Invalid parameter types. Expecting strings.');
+    }
+
+    // Retrieve the document from Firestore
+    const docSnapshot = await drivers.doc(docId).get();
+
+    // Check if the document exists
+    if (docSnapshot.exists) {
+      // Get the field value
+      const fieldValue = docSnapshot.get(fieldName);
+
+      // Return the field value
+      return fieldValue;
+    } else {
+      throw new Error(`Document with ID ${docId} not found in Firestore.`);
+    }
+  } catch (error) {
+    console.error('Error retrieving field value from Firestore:', error);
+    throw error; // You may want to handle the error appropriately in your application
+  }
+}
 
 export async function doesDocumentExist(docId) {
   try {
@@ -193,9 +222,14 @@ export async function doesDocumentExist(docId) {
     }
 
     // Retrieve the document from Firestore
-    const docSnapshot = await storageCollection.doc(docId).get();
+    const docSnapshot = await driver.doc(docId).get();
 
     // Check if the document exists
+
+    console.log(docSnapshot.exists)
+
+    console.log(docId)
+
     return docSnapshot.exists;
   } catch (error) {
     console.error('Error checking document existence in Firestore:', error);

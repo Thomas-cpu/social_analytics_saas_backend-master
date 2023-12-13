@@ -3,6 +3,7 @@ import { updateStageInFirestore } from "../stages.js";
 export const initialStage = {
   async exec({ from, message, Whatsapp, recipientName }) {
     try {
+
       const updateParams = {
         from: from,
         updatedFields: {
@@ -35,6 +36,7 @@ export const initialStage = {
           console.error("Error:", error);
         });
         
+
     } catch (error) {
       console.error("Error in initialStage.exec:", error);
     }
