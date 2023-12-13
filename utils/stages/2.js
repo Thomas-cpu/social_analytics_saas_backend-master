@@ -1,6 +1,9 @@
 import { menu } from '../menu.js';
 import { db } from '../firebase_config.js';
 import { storage } from '../storage.js';
+import { getFieldValueFromFirestore } from "../stages.js";
+import { updateStageInFirestore } from "../stages.js";
+
 
 var Thelastrelpy_id;
 
@@ -32,10 +35,11 @@ export const stageTwo = {
 
     if(incomingMessage.list_reply){
 
+     
+
 
       const restaurantExists = await checkRestaurantExists(incomingMessage.list_reply.id);
 
-      console.log(restaurantExists)
 
     if(restaurantExists){
 
@@ -79,31 +83,58 @@ export const stageTwo = {
  
           if(menuItems.find(item => item.id === incomingMessage.list_reply.id)){
 
+            var items = await getFieldValueFromFirestore(from, "items");
 
-            if(storage[from].itens.push(menuItems.find(item => item.id === incomingMessage.list_reply.id))){
+            const updatedItems = items.concat(menuItems.find(item => item.id === incomingMessage.list_reply.id));
 
-                await Whatsapp.sendSimpleButtons({
-                    message: "You want to",
-                    recipientPhone: from,
-                    listOfButtons: [
-                        {
-                            title: 'add another item',
-                            id:'add_more',
-                        },
+          
+          if(updatedItems){
+
+            console.log(updatedItems)
+
+
+          const updateParams = {
+            from: from,
+            updatedFields: {
+              stage: 2,
+              items: updatedItems
+              // Add more fields as needed
+            },
+          };
+
+        updateStageInFirestore(updateParams)
+        .then(async () => {
+          try {
+
+            await Whatsapp.sendSimpleButtons({
+              message: "You want to",
+              recipientPhone: from,
+              listOfButtons: [
+                  {
+                      title: 'add another item',
+                      id:'add_more',
+                  },
+          
+                  {
+                    title: 'view order',
+                    id:'view_order',
+                  },
+                {
+                  title: 'cancel',
+                  id:'cancel',
+              },
                 
-                        {
-                          title: 'view order',
-                          id:'view_order',
-                        },
-                      {
-                        title: 'cancel',
-                        id:'cancel',
-                    },
-                      
-                    ]
-                })
+              ]
+          })
+         
+          } catch (error) {
+            console.error("Error in initialStage.exec:", error);
+            // Handle the error as needed, such as logging, sending a response, etc.
+          }
+        })
 
-                storage[from].stage = 2;
+
+
 
             }
 
@@ -113,6 +144,13 @@ export const stageTwo = {
         }
 
       
+    }else{
+
+      
+
+
+
+
     }
 
 
@@ -157,20 +195,30 @@ export const stageTwo = {
         }else if(incomingMessage.button_reply.id=='view_order'){
 
             let desserts = '';
-            const itens = storage[from].itens;
-            itens.map((item, index) => {
-              if (index == itens.length - 1) {
+
+           var items = await getFieldValueFromFirestore(from, "items");
+
+            items.map((item, index) => {
+              if (index == items.length - 1) {
                 desserts += index+'-'+item.description + '.';
               } else {
                 desserts += index+'-'+item.description + '\n';
               }
             });
 
-           const total = storage[from].itens.length;
+          // const total = items.length;
+
+           const totalPrice = items.reduce((total, item) => {
+                        // Extract the numeric part of the price and convert it to a number
+                        const itemPrice = Number(item.price.replace('R', ''));
+                        
+                        // Add the current item's price to the total
+                        return total + itemPrice;
+                      }, 0);
 
            const order_summery =  `🗒️ *YOUR ORDER*: \n\n*${desserts}* \n\n💰 Total amount: *${
-            total * 6
-          },00 reais*. \n🚚 Delivery fee: R20. \n⏳ Delivery time: *50 minutes*. \n` +
+            totalPrice
+          },00*. \n🚚 Delivery fee: R20. \n⏳ Delivery time: *50 minutes*. \n` +
                 '🔊 ```The driver will come to fecth the money to pay the Resturants.```'
 
             //console.log(order_summery)
@@ -197,35 +245,90 @@ export const stageTwo = {
 
         }else if(incomingMessage.button_reply.id=='cancel'){
 
-            storage[from].stage = 0;
-            storage[from].itens = [];
-
-
-            await Whatsapp.sendSimpleButtons({
-                message:"Molo "+recipientName+"! 🌟 \nHow can we assist you today? 🤔🛠️",
+          const updateParams = {
+            from: from,
+            updatedFields: {
+              stage: 1,
+              items: [],
+              // Add more fields as needed
+            },
+          };
+  
+          updateStageInFirestore(updateParams)
+            .then(async () => {
+              // Stage updated successfully
+  
+              await Whatsapp.sendSimpleButtons({
+                message:
+                  "Molo " +
+                  recipientName +
+                  "! 🌟 \nHow can we assist you today? 🤔🛠️",
                 recipientPhone: from,
                 listOfButtons: [
-                    {
-                        title: 'Order food',
-                        id:'Shopping',
-                    },
-                    {
-                        title:'Errands',
-                        id:'Errands',
-                    }, 
-                
-                ]
+                  {
+                    title: "Shopping",
+                    id: "Shopping",
+                  },
+                  {
+                    title: "Errands",
+                    id: "Errands",
+                  },
+                ],
+              });
             })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
+         
+
+
+
 
         }else if(incomingMessage.button_reply.id=='finsh_order'){
 
-                storage[from].stage = 3;
-                
-                await Whatsapp.sendText({
-                    message: "🗺️ Now enter the ADDRESS (Number, Street, Neighborhood)  🏠✉️🌍",
-                    recipientPhone: from,
-                });
+               // storage[from].stage = 3;
 
+
+                 //   const updateData = { from: from, newStage: 7, };
+
+        const updateParams = {
+          from: from,
+          updatedFields: {
+            stage: 3,
+            errands:"Food order"
+            // Add more fields as needed
+          },
+        };
+      
+        updateStageInFirestore(updateParams)
+          .then(async () => {
+
+           // storage[from].errands = message;
+  
+            await Whatsapp.sendSimpleButtons({
+              message: "🗺️ Now enter the ADDRESS (Number, Street, Neighborhood)  🏠✉️🌍",
+              recipientPhone: from,
+              listOfButtons: [
+                  {
+                      title: 'Cancel',
+                      id:'Cancel',
+                  },
+
+                
+              ]
+          })
+  
+           
+
+  
+          })
+          .catch((error) => {
+            console.error('Error:', error);
+          });
+
+                
+                
+                
         }else if(incomingMessage.button_reply.id=='Back'){
 
 
@@ -237,8 +340,22 @@ export const stageTwo = {
 
            if(restaurantExists){
 
-            console.log(restaurantExists)
 
+            const updateParams = {
+              from: from,
+              updatedFields: {
+                stage: 2,
+        
+                // Add more fields as needed
+              },
+            };
+    
+            updateStageInFirestore(updateParams)
+              .then(async () => {
+                // Stage updated successfully
+
+
+                
                 await Whatsapp.sendSimpleButtons({
                   message: "You want to",
                   recipientPhone: from,
@@ -259,8 +376,20 @@ export const stageTwo = {
                     
                   ]
               })
+    
+            
 
-              storage[from].stage = 2;
+
+
+              })
+              .catch((error) => {
+                console.error("Error:", error);
+              });
+           
+ 
+
+
+            
 
 
            }

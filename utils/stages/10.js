@@ -22,14 +22,12 @@ export const stageten = {
           from: customer,
           updatedFields: {
             stage: 11,
-            // Add more fields as needed
           },
         };
 
         updateStageInFirestore(updateParams)
           .then(async () => {
-            // Stage updated successfully
-
+ 
             await Whatsapp.sendSimpleButtons({
               message:
                 "Have you finished doing the Errand/fetching the Order ?",
@@ -52,7 +50,6 @@ export const stageten = {
             console.error("Error:", error);
           });
 
-        //storage[customer].errands
       }
     } else {
     }

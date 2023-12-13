@@ -341,28 +341,77 @@ router.post('/callback',async (req, res) => {
                             
                                 let number  = incomingMessage.button_reply.id.slice(0,11);
 
-                                // if(storage[number].driver.trim() === ""){
+                                var driver = await getFieldValueFromFirestore(number, "driver");
+
+                                if(driver.trim() === ""){
+
+
+                                    const fromData = { from:number };
+               
+                                    getStage(fromData)
+                                   .then((currentStage) => {
+                   
+                                    if(currentStage==4)
+                                        {
+
+
+                                            
+                                        }                                       
+                   
+                                  
+                   
+                   
+                                   })
+                                   .catch((error) => {
+                   
+                                       console.error('Error:', error);
+                   
+                                   });
+
+                                    console.log("The best here")
+
+
+                                    const updateParams = {
+                                        from: from,
+                                        updatedFields: {
+                                          driver: recipientPhone,
+                                        },
+                                      };
+                                
+                                      updateStageInFirestore(updateParams)
+                                        .then(async () => {
+                                     
+
+                                            const messageResponse = stages[17].stage.exec({
+                                                from: number,
+                                                message: message,
+                                                Whatsapp:Whatsapp,
+                                                recipientName:recipientName,
+                                                incomingMessage:incomingMessage
+                                            });
+                               
+
+
+                                        })
+                                        .catch((error) => {
+                                          console.error("Error:", error);
+                                        });
     
     
-                                //     if(getStage({ from: number})==4){
     
-                                //         storage[number].driver = recipientPhone
-                                        
-                                //         console.log(storage[number].driver)
-        
-                                //             const messageResponse = stages[17].stage.exec({
-                                //                 from: number,
-                                //                 message: message,
-                                //                 Whatsapp:Whatsapp,
-                                //                 recipientName:recipientName,
-                                //                 incomingMessage:incomingMessage
-                                //             });
-                        
+                                }else{
+
+                             
+                                        await Whatsapp.sendText({
+
+                                            message: 'The trip has been taken already.',
+                                            recipientPhone: driver,
                                     
-                                //     }
-    
-    
-                                // }
+                                        }); 
+                                                                                
+
+
+                                }
 
 
 

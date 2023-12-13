@@ -229,3 +229,25 @@ export async function getStorageIDByDriver(driverValue) {
 }
 
 
+export async function deleteDocumentById(docId) {
+  try {
+    // Validate parameters
+    if (typeof docId !== 'string') {
+      throw new Error('Invalid parameter type. Expecting a string.');
+    }
+
+    // Delete the document from Firestore
+    await storageCollection.doc(docId).delete();
+
+    console.log(`Document with ID ${docId} deleted successfully.`);
+  } catch (error) {
+    console.error('Error deleting document from Firestore:', error);
+    throw error; // You may want to handle the error appropriately in your application
+  }
+}
+
+
+
+
+
+

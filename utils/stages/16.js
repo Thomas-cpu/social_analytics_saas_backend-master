@@ -1,55 +1,103 @@
 import { storage } from '../storage.js';
 import { db } from '../firebase_config.js'
 import { updateDocument } from '../firebase_config.js'
+import { updateStageInFirestore } from "../stages.js";
+import { getFieldValueFromFirestore } from "../stages.js";
+import { getStorageIDByDriver } from "../stages.js";
+
+import { deleteDocumentById } from "../stages.js";
 
 export const stagesixteen = {
 
   async exec({ from, Whatsapp,customer,incomingMessage}) {
 
-    storage[from].Comment = incomingMessage.text.body;
+    
+
+    var order = await getFieldValueFromFirestore(from, "order_no");
+
+    var driver = await getFieldValueFromFirestore(from, "driver");
+
+    var rating = await getFieldValueFromFirestore(from, "rating");
+
+   // var Comments = await getFieldValueFromFirestore(from, "Comments");
+
+
+    
+  const fieldsToUpdate = {
+    status: 'Completed',
+    // Add more fields as needed
+  };
+
+  
+  updateDocument('Orders',order, fieldsToUpdate);
+
+
+
+
     
     const collectionName="drivers"
+   
 
+    const updateParams = {
+      from: from,
+      updatedFields: {
+        stage: 0,
+        // Add more fields as needed
+      },
+    };
+
+    updateStageInFirestore(updateParams)
+      .then(async () => {
+
+  
     const newItem = {
 
-        ratings: storage[from].rating,
-        client:from,
-        Comments: storage[from].Comment,
+      ratings: rating,
+      client:from,
+      Comments:incomingMessage.text.body,
 
-			};
+    };
 
 
-    db.collection(collectionName)
-		.where('phone', '==', storage[from].driver) // Use a field that uniquely identifies your main document
-		.get()
-		.then((querySnapshot) => {
-			querySnapshot.forEach((doc) => {
-			const documentId = doc.id;
-			const menuArray = doc.data().rating || [];
-      
-      const trips = doc.data().trips+1;
+  db.collection(collectionName)
+  .where('phone', '==', driver)
+  .get()
+  .then((querySnapshot) => {
+    querySnapshot.forEach((doc) => {
+    const documentId = doc.id;
+    const menuArray = doc.data().rating || [];
+    
+    const trips = doc.data().trips+1;
 
-			// Add the new item to the existing 'menu' array
-        const updatedMenuArray = [...menuArray, newItem];
+      const updatedMenuArray = [...menuArray, newItem];
 
-        // Update the document with the modified 'menu' array
-          db.collection(collectionName)
-            .doc(documentId)
-            .update({ rating: updatedMenuArray ,
-              trips:trips})
-            .then(() => {
-            console.log('Item added successfully');
-            })
-          .catch((error) => {
-          console.error('Error adding item:', error);
-          });
+        db.collection(collectionName)
+          .doc(documentId)
+          .update({ rating: updatedMenuArray ,
+            trips:trips})
+          .then(() => {
+          console.log('Item added successfully');
+          })
+        .catch((error) => {
+        console.error('Error adding item:', error);
         });
-      })
-      .catch((error) => {
-        console.error('Error getting documents:', error);
       });
+    })
+    .catch((error) => {
+      console.error('Error getting documents:', error);
+    });
 
-      storage[from].stage = 0;    
+
+
+    const driverValueToSearch = from;
+
+
+    // Delete the document with the retrieved storageID
+
+
+    try {
+      // Delete the document with the specified ID
+      await deleteDocumentById(from);
 
       await Whatsapp.sendText({
 
@@ -59,19 +107,37 @@ export const stagesixteen = {
     }); 
 
 
+
     await Whatsapp.sendText({
 
       message: 'The trip is completed.',
-      recipientPhone: storage[from].driver,
+      recipientPhone: driver,
 
   }); 
- 
-  const fieldsToUpdate = {
-    status: 'Completed',
-    // Add more fields as needed
-  };
+
+
+
+    } catch (error) {
+      console.error('Error:', error);
+    }
+
+
+    
+
+    
+
   
-  updateDocument('Orders', storage[from].order_no, fieldsToUpdate);
+    
+
+   
+
+
+
+
+  })
+
+
+  
  
   },
   

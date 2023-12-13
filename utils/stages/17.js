@@ -30,12 +30,13 @@ function findItemById(id) {
 export const stageseventeen = {
 
 
-  exec({from,incomingMessage,message,Whatsapp,recipientName}) {
+  async exec({from,incomingMessage,message,Whatsapp,recipientName}) {
 
+
+    var items = await getFieldValueFromFirestore(from, "items");
     
-    storage[from].itens.forEach(async tShirt => {
+    items.forEach(async tShirt => {
 
-      console.log(tShirt.id)
 
       if(getObjectNumberByName(findItemById(tShirt.id))){
         
