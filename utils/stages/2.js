@@ -47,7 +47,9 @@ export const stageTwo = {
 
         Thelastrelpy_id=incomingMessage.list_reply.id;
 
-        const transformedItems = menuItems.map(item => {
+        if(menuItems){
+
+          const transformedItems = menuItems.map(item => {
             return {
               title: item.title,
               description: item.description,
@@ -72,6 +74,18 @@ export const stageTwo = {
 
             ],
         });
+
+          
+
+        }else{
+
+
+          console.log("The best thing ever thats going to be done here")
+
+
+        }
+
+      
 
 
     }
@@ -266,7 +280,7 @@ export const stageTwo = {
                 recipientPhone: from,
                 listOfButtons: [
                   {
-                    title: "Shopping",
+                    title: "Order food",
                     id: "Shopping",
                   },
                   {

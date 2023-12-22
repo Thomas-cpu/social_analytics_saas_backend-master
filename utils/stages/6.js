@@ -33,7 +33,7 @@ export const stagesix = {
                   recipientPhone: from,
                   listOfButtons: [
                       {
-                          title: 'Shopping',
+                          title: 'Order food',
                           id:'Shopping',
                       },
                       {
@@ -50,15 +50,10 @@ export const stagesix = {
                 console.error('Error:', error);
               });
 
-            //storage[from].stage = 1;
-
-    
-
+  
         }
 
       }else{
-
-     //   const updateData = { from: from, newStage: 7, };
 
         const updateParams = {
           from: from,

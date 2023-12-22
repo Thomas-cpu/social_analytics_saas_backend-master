@@ -130,7 +130,7 @@ export const stageeight= {
                 recipientPhone: from,
                 listOfButtons: [
                   {
-                    title: "Shopping",
+                    title: "Order food",
                     id: "Shopping",
                   },
                   {

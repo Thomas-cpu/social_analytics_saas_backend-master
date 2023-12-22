@@ -30,7 +30,7 @@ export const stageseven = {
               recipientPhone: from,
               listOfButtons: [
                 {
-                  title: "Shopping",
+                  title: "Order food",
                   id: "Shopping",
                 },
                 {

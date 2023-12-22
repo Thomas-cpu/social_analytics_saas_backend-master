@@ -52,6 +52,32 @@ export const stageOne = {
                   "Hi unfortunately there are no resturants available at moment please try again in 10 minutes",
                 recipientPhone: from,
               });
+
+        
+              const updateParams = {
+                from: from,
+                updatedFields: {
+                  stage: 1,
+                },
+              };
+
+              updateStageInFirestore(updateParams)
+              .then(async () => {
+                try {
+                  console.log("good");
+                   } catch (error) {
+                  console.error("Error in initialStage.exec:", error);
+                  // Handle the error as needed, such as logging, sending a response, etc.
+                }
+              })
+      
+              .catch((error) => {
+                console.error("Error:", error);
+              });
+
+
+
+
             } else {
               console.log(restaurantData);
 
@@ -109,7 +135,7 @@ export const stageOne = {
       const updateParams = {
         from: from,
         updatedFields: {
-          stage: 6,
+          stage: 1,
           // Add more fields as needed
         },
       };
@@ -145,6 +171,8 @@ export const stageOne = {
         .catch((error) => {
           console.error("Error:", error);
         });
+
+
     }
   },
 };
