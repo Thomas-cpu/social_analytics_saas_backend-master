@@ -29,6 +29,10 @@ export const stageOne = {
   async exec({ from, incomingMessage, Whatsapp, recipientName }) {
     if (incomingMessage.button_reply) {
       if (incomingMessage.button_reply.id === "Shopping") {
+
+
+
+
         const updateParams = {
           from: from,
           updatedFields: {
@@ -42,7 +46,7 @@ export const stageOne = {
             // Fetch restaurant data and replace existing rows
             const restaurantData = await fetchRestaurants();
 
-            console.log(restaurantData.length);
+            // console.log(restaurantData.length);
 
             if (restaurantData.length === 0) {
               console.log("The best thing ever");
@@ -79,6 +83,7 @@ export const stageOne = {
 
 
             } else {
+
               console.log(restaurantData);
 
               await Whatsapp.sendRadioButtons({
@@ -94,6 +99,8 @@ export const stageOne = {
                   },
                 ],
               });
+
+              
             }
 
             // Stage updated successfully
@@ -101,6 +108,7 @@ export const stageOne = {
           .catch((error) => {
             console.error("Error:", error);
           });
+          
       } else if (incomingMessage.button_reply.id === "Errands") {
         const updateParams = {
           from: from,

@@ -11,7 +11,6 @@ import { getdriverdetails } from "../utils/stages.js";
 import { getStorageIDByDriver } from "../utils/stages.js";
 import { db } from '../utils/firebase_config.js';
 
-
 import express from 'express';
 const router = express.Router();
 import Store from '../utils/store.js';

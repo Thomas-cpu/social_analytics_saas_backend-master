@@ -1,14 +1,17 @@
 import { menu } from '../menu.js';
 import { db } from '../firebase_config.js';
-import { storage } from '../storage.js';
 import { getFieldValueFromFirestore } from "../stages.js";
 import { updateStageInFirestore } from "../stages.js";
+
 
 
 var Thelastrelpy_id;
 
 // Assume you have a 'restaurants' collection in Firestore
 const restaurantsCollection = db.collection('restaurant');
+
+
+
 
 // Fetch restaurant data from Firestore
 const fetchRestaurants = async () => {
@@ -31,16 +34,8 @@ export const stageTwo = {
 
   async exec({ from,incomingMessage,message,Whatsapp,recipientName }) {
 
-  
-
     if(incomingMessage.list_reply){
-
-     
-
-
       const restaurantExists = await checkRestaurantExists(incomingMessage.list_reply.id);
-
-
     if(restaurantExists){
 
         const menuItems = menu[incomingMessage.list_reply.id];
@@ -80,7 +75,51 @@ export const stageTwo = {
         }else{
 
 
-          console.log("The best thing ever thats going to be done here")
+        //  console.log("The best thing ever thats going to be done here")
+
+        const restaurantData = await fetchRestaurants();
+
+        
+
+          await Whatsapp.sendText({
+            message:
+              "The Menu for this Resturant has not be added yet",
+            recipientPhone: from,
+          });
+
+          const updateParams = {
+            from: from,
+            updatedFields: {
+              stage: 1,
+            },
+          };
+
+          updateStageInFirestore(updateParams)
+          .then(async () => {
+            try {
+              console.log("good");
+               } catch (error) {
+              console.error("Error in initialStage.exec:", error);
+              // Handle the error as needed, such as logging, sending a response, etc.
+            }
+          })
+
+          console.log(restaurantData)
+
+          // await Whatsapp.sendRadioButtons({
+          //   recipientPhone: from,
+          //   headerText: "Please Select Another Resturant",
+          //   bodyText: "All restaurants on this app are trusted brands",
+          //   footerText: "Approved by Cloudy Delivery",
+
+          //   listOfSections: [
+          //     {
+          //       title: "Top 10 Restaurant",
+          //       rows: restaurantData,
+          //     },
+          //   ],
+          // });
+
 
 
         }
