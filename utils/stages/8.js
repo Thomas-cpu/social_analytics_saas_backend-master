@@ -83,6 +83,7 @@ export const stageeight= {
             from: from,
             updatedFields: {
               stage: 6,
+              driver:""
   
               // Add more fields as needed
             },
@@ -114,6 +115,7 @@ export const stageeight= {
             updatedFields: {
               stage: 1,
               itens: [],
+              driver:" "
               // Add more fields as needed
             },
           };
@@ -129,10 +131,10 @@ export const stageeight= {
                   "! 🌟 \nHow can we assist you today? 🤔🛠️",
                 recipientPhone: from,
                 listOfButtons: [
-                  {
-                    title: "Order food",
-                    id: "Shopping",
-                  },
+                  // {
+                  //   title: "Order food",
+                  //   id: "Shopping",
+                  // },
                   {
                     title: "Errands",
                     id: "Errands",
@@ -155,6 +157,7 @@ export const stageeight= {
         from: from,
         updatedFields: {
           stage: 8,
+          driver:"",
           address: message,
         },
       };

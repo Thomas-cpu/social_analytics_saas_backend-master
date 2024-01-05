@@ -55,8 +55,6 @@ export const stageeleven = {
               }); 
                 // Stage updated successfully
 
-          
-
               })
 
           
@@ -64,11 +62,6 @@ export const stageeleven = {
             console.error("Error:", error);
           });
         
-      
-  
-    
-  
-  
       }
 
 

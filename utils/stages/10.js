@@ -52,6 +52,12 @@ export const stageten = {
 
       }
     } else {
+
+      await Whatsapp.sendText({
+        message: "The driver is en route to your specified location for the errand",
+        recipientPhone:from,
+      });
+
     }
   },
 };
