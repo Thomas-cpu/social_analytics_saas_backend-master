@@ -1,8 +1,11 @@
 import { updateStageInFirestore } from "../stages.js";
 
 export const initialStage = {
+  
   async exec({ from, message, Whatsapp, recipientName }) {
     try {
+
+
 
       const updateParams = {
         from: from,
