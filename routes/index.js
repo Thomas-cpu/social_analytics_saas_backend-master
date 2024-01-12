@@ -339,12 +339,11 @@ router.post("/callback", async (req, res) => {
                           });
                              
                         }else{
-
                             await Whatsapp.sendText({
                               message:"Sorry this trip has been taken by another driver",
                               recipientPhone: incomingMessage.from.phone,
                             });
-
+                          
                         }
 
                     } 
