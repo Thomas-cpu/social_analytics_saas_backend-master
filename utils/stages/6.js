@@ -32,10 +32,10 @@ export const stagesix = {
                   message:"Molo "+recipientName+"! 🌟 \nHow can we assist you today? 🤔🛠️",
                   recipientPhone: from,
                   listOfButtons: [
-                      {
-                          title: 'Order food',
-                          id:'Shopping',
-                      },
+                      // {
+                      //     title: 'Order food',
+                      //     id:'Shopping',
+                      // },
                       {
                           title:'Errands',
                           id:'Errands',

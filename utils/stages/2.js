@@ -35,7 +35,9 @@ export const stageTwo = {
   async exec({ from,incomingMessage,message,Whatsapp,recipientName }) {
 
     if(incomingMessage.list_reply){
+
       const restaurantExists = await checkRestaurantExists(incomingMessage.list_reply.id);
+
     if(restaurantExists){
 
         const menuItems = menu[incomingMessage.list_reply.id];
@@ -63,7 +65,7 @@ export const stageTwo = {
             footerText: 'Approved by Cloudy deliveries',
             listOfSections: [
                 {
-                    title: 'Break Fast',
+                    title: 'Food Menu',
                     rows: transformedItems,
                 },
 
@@ -318,10 +320,10 @@ export const stageTwo = {
                   "! 🌟 \nHow can we assist you today? 🤔🛠️",
                 recipientPhone: from,
                 listOfButtons: [
-                  {
-                    title: "Order food",
-                    id: "Shopping",
-                  },
+                  // {
+                  //   title: "Order food",
+                  //   id: "Shopping",
+                  // },
                   {
                     title: "Errands",
                     id: "Errands",

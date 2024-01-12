@@ -21,10 +21,10 @@ export const initialStage = {
               "! 🌟 \nHow can we assist you today? 🤔🛠️",
             recipientPhone: from,
             listOfButtons: [
-              {
-                title: "Order food",
-                id: "Shopping",
-              },
+              // {
+              //   title: "Order food",
+              //   id: "Shopping",
+              // },
               {
                 title: "Errands",
                 id: "Errands",

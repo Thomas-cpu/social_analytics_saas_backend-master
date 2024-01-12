@@ -6,11 +6,13 @@
   
   export const driver = {};
 
-  console.log("The best")
+ 
 
   const isDriverEmpty = Object.keys(driver).length === 0;
 
   if (isDriverEmpty) {
+
+    console.log("The best")
 
     driversCollection.get()
     .then(snapshot => {
@@ -20,7 +22,7 @@
         
         driver[driverId] = {
           name: driverData.name,
-          staus: driverData.staus
+          status: driverData.status
         };
       });
     })
