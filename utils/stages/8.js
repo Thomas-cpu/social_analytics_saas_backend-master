@@ -83,6 +83,7 @@ export const stageeight= {
             from: from,
             updatedFields: {
               stage: 6,
+              driver:""
   
               // Add more fields as needed
             },
@@ -116,6 +117,7 @@ export const stageeight= {
             updatedFields: {
               stage: 1,
               itens: [],
+              driver:" "
               // Add more fields as needed
             },
           };
@@ -157,6 +159,7 @@ export const stageeight= {
         from: from,
         updatedFields: {
           stage: 8,
+          driver:"",
           address: message,
         },
       };

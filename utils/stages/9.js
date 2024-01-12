@@ -63,22 +63,67 @@ export const stagenine = {
         });
 
 
+    }else if(incomingMessage.button_reply.id ==="cancelrequest"){
+
+          var errands = await getFieldValueFromFirestore(from, "errands");
+
+          var address = await getFieldValueFromFirestore(from, "address");
+
+          
+        const updateParams = {
+          from: from,
+          updatedFields: {
+            stage: 8,
+            driver:""
+          },
+        };
+
+        updateStageInFirestore(updateParams)
+          .then(async () => {
+            const fieldName = "errands";
+
+              await Whatsapp.sendSimpleButtons({
+                message:
+                  "🌟 REQUEST-" +
+                  errands+
+                  "\n-----------------------------------\n🏠ADDRESS - " +
+                  address+
+                  "\n-----------------------------------\n",
+                recipientPhone: from,
+                listOfButtons: [
+                  {
+                    title: "Confirm",
+                    id: "Confirm",
+                  },
+                  {
+                    title: "Change Request",
+                    id: "Confirm",
+                  },
+                  
+                  {
+                    title: "Cancel Request",
+                    id: "cancelrequest",
+                  },
+                ],
+              });
+
+
+
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+
     }
 
 
 
    }else{
 
-
-    var errands = await getFieldValueFromFirestore(from, "errands");
-
-    var address = await getFieldValueFromFirestore(from, "address");
-
-
     const updateParams = {
       from: from,
       updatedFields: {
-        stage: 8,
+        stage: 9,
       },
     };
 
@@ -86,24 +131,13 @@ export const stagenine = {
       .then(async () => {
         const fieldName = "errands";
 
-        
-        await Whatsapp.sendSimpleButtons({
+
+          await Whatsapp.sendSimpleButtons({
           message:
-            "🌟 REQUEST-" +
-            errands+
-            "\n-----------------------------------\n🏠ADDRESS - " +
-            address+
-            "\n-----------------------------------\n",
+            "Your designated driver is en route to your location.",
           recipientPhone: from,
           listOfButtons: [
-            {
-              title: "Confirm",
-              id: "Confirm",
-            },
-            {
-              title: "Change Request",
-              id: "changerequest",
-            },
+          
             {
               title: "Cancel Request",
               id: "cancelrequest",
@@ -120,9 +154,6 @@ export const stagenine = {
    }
 
 
-
-
- 
   },
 
 };

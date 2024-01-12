@@ -108,19 +108,19 @@ export const stageTwo = {
 
           console.log(restaurantData)
 
-          // await Whatsapp.sendRadioButtons({
-          //   recipientPhone: from,
-          //   headerText: "Please Select Another Resturant",
-          //   bodyText: "All restaurants on this app are trusted brands",
-          //   footerText: "Approved by Cloudy Delivery",
+          await Whatsapp.sendRadioButtons({
+            recipientPhone: from,
+            headerText: "Please Select Another Resturant",
+            bodyText: "All restaurants on this app are trusted brands",
+            footerText: "Approved by Cloudy Delivery",
 
-          //   listOfSections: [
-          //     {
-          //       title: "Top 10 Restaurant",
-          //       rows: restaurantData,
-          //     },
-          //   ],
-          // });
+            listOfSections: [
+              {
+                title: "Top 10 Restaurant",
+                rows: restaurantData,
+              },
+            ],
+          });
 
 
 
