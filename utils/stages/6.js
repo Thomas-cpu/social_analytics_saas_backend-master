@@ -28,21 +28,31 @@ export const stagesix = {
             updateStageInFirestore(updateParams)
               .then(async () => {
       
+
+                await Whatsapp.sendText({
+                  message: 'We will welcome you back anytime 😀',
+                  recipientPhone: customer,
+              }); 
+              
                 await Whatsapp.sendSimpleButtons({
-                  message:"Molo "+recipientName+"! 🌟 \nHow can we assist you today? 🤔🛠️",
+                  message:
+                    " Molweni " +
+                    recipientName +
+                    "😀\n\nWe are open Monday - Sunday from 10am - 7pm⏰\n\nHow can we help you today?",
                   recipientPhone: from,
                   listOfButtons: [
-                      // {
-                      //     title: 'Order food',
-                      //     id:'Shopping',
-                      // },
-                      {
-                          title:'Errands',
-                          id:'Errands',
-                      }, 
-                  
-                  ]
-              })
+      
+                    {
+                      title: "Request Delivery",
+                      id: "Errands",
+                    },
+                    {
+                      title: "Order food",
+                      id: "Shopping",
+                    },
+                 
+                  ],
+                });
 
               
               })

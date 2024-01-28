@@ -58,7 +58,7 @@ export const stageetwelve = {
 
             
             await Whatsapp.sendText({
-              message: '🚗🔄 The driver is on their way back from your errand/food order! 🌟🍽️',
+              message: 'The driver is coming back from your request!',
               recipientPhone: customer,
           }); 
 

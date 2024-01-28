@@ -22,23 +22,31 @@ export const stageseven = {
           .then(async () => {
             // Stage updated successfully
 
+            await Whatsapp.sendText({
+              message: 'We will welcome you back anytime 😀',
+              recipientPhone: from,
+          }); 
+
             await Whatsapp.sendSimpleButtons({
               message:
-                "Molo " +
+                " Molweni " +
                 recipientName +
-                "! 🌟 \nHow can we assist you today? 🤔🛠️",
+                "😀\n\nWe are open Monday - Sunday from 10am - 7pm⏰\n\nHow can we help you today?",
               recipientPhone: from,
               listOfButtons: [
-                // {
-                //   title: "Order food",
-                //   id: "Shopping",
-                // },
+  
                 {
-                  title: "Errands",
+                  title: "Request Delivery",
                   id: "Errands",
                 },
+                {
+                  title: "Order food",
+                  id: "Shopping",
+                },
+             
               ],
             });
+
           })
           .catch((error) => {
             console.error("Error:", error);
@@ -89,16 +97,14 @@ export const stageseven = {
         .then(async () => {
           const fieldName = "errands";
 
-          const errands = await getFieldValueFromFirestore(from, "errands");
+        //  const errands = await getFieldValueFromFirestore(from, "errands");
 
           const address = await getFieldValueFromFirestore(from, "address");
 
            
           await Whatsapp.sendSimpleButtons({
             message:
-              "🌟 REQUEST-" +
-              errands+
-              "\n-----------------------------------\n🏠ADDRESS - " +
+              "🏠Address - " +
               address+
               "\n-----------------------------------\n",
             recipientPhone: from,
@@ -107,10 +113,10 @@ export const stageseven = {
                 title: "Confirm",
                 id: "Confirm",
               },
-              {
-                title: "Change Request",
-                id: "changerequest",
-              },
+              // {
+              //   title: "Change Request",
+              //   id: "changerequest",
+              // },
               {
                 title: "Cancel Request",
                 id: "cancelrequest",

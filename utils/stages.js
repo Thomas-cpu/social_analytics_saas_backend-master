@@ -238,29 +238,33 @@ export async function doesDocumentExist(docId) {
 }
 
 
-export async function getStorageIDByDriver(driverValue) {
+export async function getStorageIDByDriver(driverValue, orderNumber) {
   try {
     // Validate parameters
-    if (typeof driverValue !== 'string') {
-      throw new Error('Invalid parameter type. Expecting a string.');
+    if (typeof driverValue !== 'string' || typeof orderNumber !== 'string') {
+      throw new Error('Invalid parameter type. Expecting strings for driverValue and orderNumber.');
     }
 
-    // Query Firestore to find the document with the specified driver value
-    const querySnapshot = await storageCollection.where('driver', '==', driverValue).get();
+    // Query Firestore to find the document with the specified driver and order number
+    const querySnapshot = await storageCollection
+      .where('driver', '==', driverValue)
+      .where('order_no', '==', orderNumber)
+      .get();
 
     // Check if any documents match the query
     if (!querySnapshot.empty) {
-      // Assuming there is only one matching document; if there are multiple, adjust as needed
+      // Assuming there is only one matching document; adjust as needed
       const storageID = querySnapshot.docs[0].id;
       return storageID;
     } else {
       return null; // Document not found
     }
   } catch (error) {
-    console.error('Error retrieving storageID from Firestore by driver value:', error);
+    console.error('Error retrieving storageID from Firestore by driver and order number:', error);
     throw error; // You may want to handle the error appropriately in your application
   }
 }
+
 
 
 export async function deleteDocumentById(docId) {

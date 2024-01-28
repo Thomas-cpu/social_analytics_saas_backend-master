@@ -41,7 +41,7 @@ export const stagefourteen = {
             await Whatsapp.sendRadioButtons({
               recipientPhone: from,
               headerText: 'Rate our driver',
-              bodyText:'Please rate our driver to continue to give better customer service',
+              bodyText:'Thank you for choosing cloudy Deliveries to handle your request😀\n\nPlease rate our service🌟',
               footerText: "Click here to rate",
               listOfSections: [
                   {

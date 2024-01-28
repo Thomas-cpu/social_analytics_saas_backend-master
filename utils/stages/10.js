@@ -42,7 +42,7 @@ export const stageten = {
 
             await Whatsapp.sendText({
               message:
-                "🚗📍 The driver has arrived at the location of your errand/restaurant! 🌟🏠🍽️",
+                "The driver has arrived at your request location",
               recipientPhone: customer,
             });
           })

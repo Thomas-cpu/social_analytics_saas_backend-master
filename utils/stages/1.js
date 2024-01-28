@@ -113,7 +113,7 @@ export const stageOne = {
         const updateParams = {
           from: from,
           updatedFields: {
-            stage: 6,
+            stage: 7,
             // Add more fields as needed
           },
         };
@@ -121,7 +121,7 @@ export const stageOne = {
         updateStageInFirestore(updateParams)
           .then(async () => {
             await Whatsapp.sendSimpleButtons({
-              message: "🌟 What can we do for you? 🚀😊",
+              message: "Please type out your address or descripion of where we will find you📍",
               recipientPhone: from,
               listOfButtons: [
                 {
@@ -153,23 +153,25 @@ export const stageOne = {
           try {
             //storage[from].stage = 1;
 
-            await Whatsapp.sendSimpleButtons({
-              message:
-                " Molo " +
-                recipientName +
-                "! 🌟 \nHow can we assist you today? 🤔🛠️",
-              recipientPhone: from,
-              listOfButtons: [
-                // {
-                //   title: "Order food",
-                //   id: "Shopping",
-                // },
-                {
-                  title: "Errands",
-                  id: "Errands",
-                },
-              ],
-            });
+              await Whatsapp.sendSimpleButtons({
+                message:
+                  " Molweni " +
+                  recipientName +
+                  "😀\n\nWe are open Monday - Sunday from 10am - 7pm⏰\n\nHow can we help you today?",
+                recipientPhone: from,
+                listOfButtons: [
+                  {
+                    title: "Request Delivery",
+                    id: "Errands",
+                  },
+                  {
+                    title: "Order food",
+                    id: "Shopping",
+                  },
+                ],
+              });
+
+
           } catch (error) {
             console.error("Error in initialStage.exec:", error);
             // Handle the error as needed, such as logging, sending a response, etc.
