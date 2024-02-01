@@ -6,13 +6,18 @@ import { getFieldValueFromFirestore } from "../stages.js";
 
 export const stagenine = {
 
-  async exec({ from, Whatsapp,customer,incomingMessage}) {
+  async exec({ from, Whatsapp,customer,incomingMessage,recipientName}) {
 
+    //console.log(incomingMessage.button_reply.id)
 
    if(incomingMessage.button_reply){
 
+   
 
     if (incomingMessage.button_reply.id === 'DriverArrived') {
+
+
+      console.log("Yes I am here");
 
       const fieldsToUpdate = {
         status: 'The driver has arrived at client location',
@@ -32,6 +37,7 @@ export const stagenine = {
           stage: 10,
           // Add more fields as needed
         },
+
       };
 
       updateStageInFirestore(updateParams)
@@ -52,9 +58,12 @@ export const stagenine = {
         })
 
           await Whatsapp.sendText({
-            message: '! 🌟🏎️📍The driver has arrived at your location🌟🏠',
+            message: 'The driver has arrived at your address',
             recipientPhone: customer,
         }); 
+
+
+        console.log("I have arrived ", customer);
          
 
         })
@@ -63,7 +72,7 @@ export const stagenine = {
         });
 
 
-    }else if(incomingMessage.button_reply.id ==="cancelrequest"){
+    }else if(incomingMessage.button_reply.id ==="cancel"){
 
           var errands = await getFieldValueFromFirestore(from, "errands");
 
@@ -73,7 +82,7 @@ export const stagenine = {
         const updateParams = {
           from: from,
           updatedFields: {
-            stage: 8,
+            stage: 1,
             driver:""
           },
         };
@@ -82,33 +91,32 @@ export const stagenine = {
           .then(async () => {
             const fieldName = "errands";
 
-              await Whatsapp.sendSimpleButtons({
-                message:
-                  "🌟 REQUEST-" +
-                  errands+
-                  "\n-----------------------------------\n🏠ADDRESS - " +
-                  address+
-                  "\n-----------------------------------\n",
-                recipientPhone: from,
-                listOfButtons: [
-                  {
-                    title: "Confirm",
-                    id: "Confirm",
-                  },
-                  {
-                    title: "Change Request",
-                    id: "Confirm",
-                  },
-                  
-                  {
-                    title: "Cancel Request",
-                    id: "cancelrequest",
-                  },
-                ],
-              });
+            await Whatsapp.sendText({
+              message: 'We will welcome you back anytime 😀',
+              recipientPhone: from,
+          }); 
 
+          await Whatsapp.sendSimpleButtons({
+            message:
+              " Molweni " +
+              recipientName +
+              "😀\n\nWe are open Monday - Sunday from 10am - 7pm⏰\n\nHow can we help you today?",
+            recipientPhone: from,
+            listOfButtons: [
 
+              {
+                title: "Request Delivery",
+                id: "Errands",
+              },
+              {
+                title: "Order food",
+                id: "Shopping",
+              },
+           
+            ],
+          });
 
+          
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -140,7 +148,7 @@ export const stagenine = {
           
             {
               title: "Cancel Request",
-              id: "cancelrequest",
+              id: "cancel",
             },
           ],
         });

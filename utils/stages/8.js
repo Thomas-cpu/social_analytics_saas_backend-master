@@ -33,7 +33,7 @@ export const stageeight= {
 
               
                   await Whatsapp.sendSimpleButtons({
-                    message: '🔃 GETTING A DRIVER FOR YOU. 🚗💨\n⏳ Wait a minute. ⌛️🤞',
+                    message: 'Finding you a driver. ⌛️',
                     recipientPhone: from,
                     listOfButtons: [
                         {
@@ -49,12 +49,11 @@ export const stageeight= {
                 console.error("Error:", error);
               });
               
-         
               const driverKeys = Object.keys(driver);
 
               for (const value of driverKeys) {
                 const element = driver[value];
-
+              
                 try {
                   await Whatsapp.sendSimpleButtons({
                     message: 'REQUEST - ' + errands + '\n\nADDRESS - ' + address + '',
@@ -76,7 +75,7 @@ export const stageeight= {
                   // Handle the error as needed
                 }
               }
-
+              
 
 
 
@@ -114,8 +113,6 @@ export const stageeight= {
 
         }else if(incomingMessage.button_reply.id === 'cancelrequest'){
 
-          
-                 
           const updateParams = {
             from: from,
             updatedFields: {
@@ -129,24 +126,32 @@ export const stageeight= {
           updateStageInFirestore(updateParams)
             .then(async () => {
               // Stage updated successfully
-  
+              await Whatsapp.sendText({
+                message: 'We will welcome you back anytime 😀',
+                recipientPhone: customer,
+            }); 
+              
               await Whatsapp.sendSimpleButtons({
                 message:
-                  "Molo " +
+                  " Molweni " +
                   recipientName +
-                  "! 🌟 \nHow can we assist you today? 🤔🛠️",
+                  "😀\n\nWe are open Monday - Sunday from 10am - 7pm⏰\n\nHow can we help you today?",
                 recipientPhone: from,
                 listOfButtons: [
-                  // {
-                  //   title: "Order food",
-                  //   id: "Shopping",
-                  // },
+    
                   {
-                    title: "Errands",
+                    title: "Request Delivery",
                     id: "Errands",
                   },
+                  {
+                    title: "Order food",
+                    id: "Shopping",
+                  },
+               
                 ],
               });
+              
+
             })
             .catch((error) => {
               console.error("Error:", error);
@@ -173,29 +178,30 @@ export const stageeight= {
           const fieldName = "errands";
 
           
-          await Whatsapp.sendSimpleButtons({
-            message:
-              "🌟 REQUEST-" +
-              errands+
-              "\n-----------------------------------\n🏠ADDRESS - " +
-              address+
-              "\n-----------------------------------\n",
-            recipientPhone: from,
-            listOfButtons: [
-              {
-                title: "Confirm",
-                id: "Confirm",
-              },
-              {
-                title: "Change Request",
-                id: "changerequest",
-              },
-              {
-                title: "Cancel Request",
-                id: "cancelrequest",
-              },
-            ],
-          });
+          // await Whatsapp.sendSimpleButtons({
+          //   message:
+          //     "🌟 REQUEST-" +
+          //     errands+
+          //     "\n-----------------------------------\n🏠ADDRESS - " +
+          //     address+
+          //     "\n-----------------------------------\n",
+          //   recipientPhone: from,
+          //   listOfButtons: [
+          //     {
+          //       title: "Confirm",
+          //       id: "Confirm",
+          //     },
+          //     {
+          //       title: "Change Request",
+          //       id: "changerequest",
+          //     },
+          //     {
+          //       title: "Cancel Request",
+          //       id: "cancelrequest",
+          //     },
+          //   ],
+          // });
+
         })
         .catch((error) => {
           console.error("Error:", error);

@@ -15,7 +15,7 @@ export const stageeleven = {
       if (incomingMessage.button_reply.id === 'arrievedatlocation') {
   
         const fieldsToUpdate = {
-          status: 'The driver has finished with client errand/order',
+          status: 'The driver has completed the request',
           // Add more fields as needed
         };
 
@@ -50,7 +50,7 @@ export const stageeleven = {
           })
   
                 await Whatsapp.sendText({
-                  message: '🚗✅ The driver has finished with your errand/order! 🌟🍽️',
+                  message: 'The driver has completed the request',
                   recipientPhone: customer,
               }); 
                 // Stage updated successfully

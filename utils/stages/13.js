@@ -38,19 +38,23 @@ export const stagethirtteen = {
 
           
         await Whatsapp.sendText({
-          message: 'The driver has arrived at your location',
+          message: 'The driver has arrived at your address',
           recipientPhone: customer,
       }); 
 
 
         await Whatsapp.sendSimpleButtons({
-          message: 'Has the driver arrived ?',
+          message: 'Has the driver completed your request ?',
           recipientPhone: customer,
           listOfButtons: [
               {
-                  title: 'Yes',
+                  title: 'Yes ✅',
                   id:'driverarrieved',
               },
+              {
+                title: 'No ❌',
+                id:'hasnotcompleed',
+            },
         
           ]
       })

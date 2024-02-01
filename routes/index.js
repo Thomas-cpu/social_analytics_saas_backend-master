@@ -66,13 +66,16 @@ function findItemById(id) {
 }
 
 
+let number;
+
+
 ////////////////////////////////////////////////////////////////////////////////
 
 let Whatsapp = new WhatsappCloudAPI({
   accessToken:
-    "EAAMdhVfHQAsBO4OKH3ugm6eeIC1lLZCBucUUDZCWkqHe897h1jzp3ZAF9OT81AM10UnwEZC8m0blNkE2AjvSXf6EcYLyELyWiEQqGY5UAmyyqjnB91wMmAOgJUfs3TtiXE0bhZBPI33ae2kNyIygPgkJMXyYyytCnjm81ZAKJxQE9bsIowOZBQ8kYYZAqpdew4ir8KScyMxl9two6DrDJLQZD",
-  senderPhoneNumberId: "223657650822923",
-  WABA_ID: "230692063450896",
+    "EABRU3YnVXC0BO4HjZAqlPwgnIDTFNXAtmFpfoxGJJ7BKij836aHKCjr1kLT6hooyrfynLoanNA2psbRLFcQGC6YIJHzSfIXQEVWu6Jfx8znYkHRAZAdHyS8bangJZB9yJ7qaqL3l7Im5jGDAqa0nNW8qaDC8yoBdbjhqVIVZChMRF4vgugNX13kx69eICu0YnZBjby71oz3anOk7eX1bg",
+  senderPhoneNumberId: "107594839093339",
+  WABA_ID: "112423675271755",
 });
 
 router.get("/callback", (req, res) => {
@@ -232,9 +235,11 @@ router.post("/callback", async (req, res) => {
                           }
 
 
-                          console.log(incomingMessage.from.phone);
+                          //console.log(incomingMessage.from.phone);
 
                           console.log("sending order to the driver");
+
+                          console.log( )
     
                           const updateParams = {
                             from: incomingMessage.button_reply.id.slice(0, 11),
@@ -300,7 +305,7 @@ router.post("/callback", async (req, res) => {
                           status: "Driver going to client",
                         })
                         .then(() => {
-                          console.log("Yes"); // Print 'Yes' when the document is successfully added
+                          //console.log("Yes"); // Print 'Yes' when the document is successfully added
                         })
                         .catch((error) => {
                           console.error(
@@ -325,7 +330,7 @@ router.post("/callback", async (req, res) => {
                                 randomOrderNumber +
                                 " 🚗 Your driver is " +
                                 drivername +
-                                " and he is on his way to you!🌟🏎️📍",
+                                " and he is on his way to you!",
                               recipientPhone: incomingMessage.button_reply.id.slice(
                                 0,
                                 11
@@ -355,12 +360,13 @@ router.post("/callback", async (req, res) => {
                     console.error("Error:", error);
                   });
 
-                let number = incomingMessage.button_reply.id.slice(0, 11);
+                number = incomingMessage.button_reply.id.slice(0, 11);
 
                 var driver = await getFieldValueFromFirestore(number, "driver");
 
                 if (driver.trim() === "") {
-                  console.log("number is stored into data base its on stage 4");
+
+                
 
                   const fromData = { from: number };
 
@@ -399,12 +405,25 @@ router.post("/callback", async (req, res) => {
 
                 // Add your logic for when the document exists
               } else {
+
                 const driverValueToSearch = recipientPhone;
+
+                //let number = incomingMessage.button_reply.id.slice(0, 11);
+
+              
+
+                console.log("This is the recipient", number)
+
+              
+
+                var order_no = await getFieldValueFromFirestore(number, "order_no");  
+
+                console.log("This is the order number", order_no)
 
                 try {
                   const storageID = await getStorageIDByDriver(
-                    driverValueToSearch
-                  );
+                    driverValueToSearch,order_no);
+
                   if (storageID !== null) {
                     console.log(
                       `StorageID for driver ${driverValueToSearch}: ${storageID}`
@@ -419,6 +438,12 @@ router.post("/callback", async (req, res) => {
                         console.log(currentStage);
 
                         // const currentStage = getStage({ from: customernumber});
+
+                       
+
+                       
+
+
 
                         const messageResponse = stages[currentStage].stage.exec(
                           {
