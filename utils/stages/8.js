@@ -13,7 +13,7 @@ export const stageeight= {
 
     var address = await getFieldValueFromFirestore(from, "address");
 
-          if (incomingMessage.button_reply) {
+        if (incomingMessage.button_reply) {
 
            
 
@@ -49,30 +49,34 @@ export const stageeight= {
                 console.error("Error:", error);
               });
               
-     
-          Object.keys(driver).map(async (value) => {
+         
+              const driverKeys = Object.keys(driver);
 
-            const element = driver[value];
-       
-              await Whatsapp.sendSimpleButtons({
-                          message: 'REQUEST - '+errands+'\n\nADDRESS - '+address+'',
-                          recipientPhone: value,
-                          listOfButtons: [
-                              {
-                                  title: 'Accept',
-                                  id:from+'@'+'accept',
-                              },
-                              {
-                                title: 'Reject',
-                                id:from+'@'+'rejected',
-                            },
-                        
-                          ]
+              for (const value of driverKeys) {
+                const element = driver[value];
 
-                
-                });
+                try {
+                  await Whatsapp.sendSimpleButtons({
+                    message: 'REQUEST - ' + errands + '\n\nADDRESS - ' + address + '',
+                    recipientPhone: value,
+                    listOfButtons: [
+                      {
+                        title: 'Accept',
+                        id: from + '@' + 'accept',
+                      },
+                      {
+                        title: 'Reject',
+                        id: from + '@' + 'rejected',
+                      },
+                    ]
+                  });
+                  console.log(`Message sent successfully to ${value}`);
+                } catch (error) {
+                  console.error(`Error sending message to ${value}: ${error.message}`);
+                  // Handle the error as needed
+                }
+              }
 
-          })
 
 
 
