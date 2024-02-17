@@ -13,7 +13,7 @@ export const stageeight= {
 
     var address = await getFieldValueFromFirestore(from, "address");
 
-          if (incomingMessage.button_reply) {
+        if (incomingMessage.button_reply) {
 
            
 
@@ -143,10 +143,10 @@ export const stageeight= {
                     title: "Request Delivery",
                     id: "Errands",
                   },
-                  {
-                    title: "Order food",
-                    id: "Shopping",
-                  },
+                  // {
+                  //   title: "Order food",
+                  //   id: "Shopping",
+                  // },
                
                 ],
               });
