@@ -4,31 +4,32 @@ import { getFieldValueFromFirestore } from "../stages.js";
 import { updateStageInFirestore } from "../stages.js";
 
 
+const fetchRestaurants = async () => {
+  try {
+    const snapshot = await restaurantsCollection
+      .where("status", "==", "online")
+      .get();
+
+    return snapshot.docs.map((doc) => ({
+      title: doc.data().name,
+      description: doc.data().description,
+      id: doc.data().name,
+    }));
+  } catch (error) {
+    console.error(
+      "Error fetching online restaurant data from Firestore:",
+      error
+    );
+    throw error;
+  }
+};
+
+
 
 var Thelastrelpy_id;
 
 // Assume you have a 'restaurants' collection in Firestore
 const restaurantsCollection = db.collection('restaurant');
-
-
-
-
-// Fetch restaurant data from Firestore
-const fetchRestaurants = async () => {
-  try {
-    const snapshot = await restaurantsCollection.get();
-    return snapshot.docs.map(doc => ({
-      title: doc.data().name, // Assuming 'name' is a field in the restaurant document
-      description: doc.data().name, // Adjust as per your Firestore schema
-      id: doc.data().name,
-    }));
-  } catch (error) {
-    console.error('Error fetching restaurant data from Firestore:', error);
-    return [];
-  }
-};
-
-
 
 export const stageTwo = {
 
@@ -36,101 +37,170 @@ export const stageTwo = {
 
     if(incomingMessage.list_reply){
 
-      const restaurantExists = await checkRestaurantExists(incomingMessage.list_reply.id);
+      var restaurant  = await getFieldValueFromFirestore(from, "Restaurant");
 
-    if(restaurantExists){
-
-        const menuItems = menu[incomingMessage.list_reply.id];
-
-        Thelastrelpy_id=incomingMessage.list_reply.id;
-
-        if(menuItems){
-
-          const transformedItems = menuItems.map(item => {
-            return {
-              title: item.title,
-              description: item.description,
-              id: item.id
-            };
-
-          });
+     // console.log(incomingMessage.list_reply.id);
 
 
-          await Whatsapp.sendRadioButtons({
-            
-            recipientPhone: from,
-            headerText: incomingMessage.list_reply.id+' Food Menu',
-            bodyText:
-                'Pick one product at a time',
-            footerText: 'Approved by Cloudy deliveries',
-            listOfSections: [
-                {
-                    title: 'Food Menu',
-                    rows: transformedItems,
-                },
+        if(incomingMessage.list_reply.id!="Other"){
 
-            ],
-        });
+              
+             
+                        ///starts here ////////
 
+            if(!restaurant){
+
+                const updateParams = {
+                  from: from,
+                  updatedFields: {
+                    Restaurant: incomingMessage.list_reply.id,
+                  },
+                };
+
+                updateStageInFirestore(updateParams)
+                  .then(async () => {
+              
+                  })
+                  .catch((error) => {
+                    console.error("Error:", error);
+                  });
+
+
+            } 
           
+
+              const restaurantExists = await checkRestaurantExists(incomingMessage.list_reply.id);
+
+              if(restaurantExists){
+          
+                  const menuItems = menu[incomingMessage.list_reply.id];
+          
+                  Thelastrelpy_id=incomingMessage.list_reply.id;
+          
+                  if(menuItems){
+          
+                    const transformedItems = menuItems.map(item => {
+                      return {
+                        title: item.title,
+                        description: item.description,
+                        id: item.id
+                      };
+          
+                    });
+          
+          
+                    await Whatsapp.sendRadioButtons({
+                      
+                      recipientPhone: from,
+                      headerText: incomingMessage.list_reply.id+' Food Menu',
+                      bodyText:
+                          'Pick one product at a time',
+                      footerText: 'Approved by Cloudy deliveries',
+                      listOfSections: [
+                          {
+                              title: 'Food Menu',
+                              rows: transformedItems,
+                          },
+          
+                      ],
+                  });
+          
+                    
+          
+                  }else{
+          
+                            await Whatsapp.sendText({
+                              message:
+                                "The Menu for this Resturant has not be added yet",
+                              recipientPhone: from,
+                            });
+                  
+                            const updateParams = {
+                              from: from,
+                              updatedFields: {
+                                stage: 1,
+                              },
+                            };
+                  
+                            updateStageInFirestore(updateParams)
+                            .then(async () => {
+                              try {
+                           
+                                } catch (error) {
+                                console.error("Error in initialStage.exec:", error);
+                                // Handle the error as needed, such as logging, sending a response, etc.
+                              }
+                            })
+
+
+                            ////end of the message ///
+
+                              const restaurantData = await fetchRestaurants();
+
+                              restaurantData.push({
+                                title: "Other",
+                                description: "If the restaurant you are seeking doesn't exist.",
+                                id: "Other"
+                              });
+
+                            await Whatsapp.sendRadioButtons({
+                              recipientPhone: from,
+                              headerText: "Please Select Another Resturant",
+                              bodyText: "All restaurants on this app are trusted brands",
+                              footerText: "Approved by Cloudy Delivery",
+                  
+                              listOfSections: [
+                                {
+                                  title: "Top 10 Restaurant",
+                                  rows: restaurantData,
+                                },
+                              ],
+                            });
+
+
+                            ///end///
+          
+        
+                  }
+          
+                
+          
+                  ////ends here ///
+              }
+
 
         }else{
 
 
-        //  console.log("The best thing ever thats going to be done here")
-
-        const restaurantData = await fetchRestaurants();
-
-        
-
-          await Whatsapp.sendText({
-            message:
-              "The Menu for this Resturant has not be added yet",
-            recipientPhone: from,
-          });
-
           const updateParams = {
             from: from,
             updatedFields: {
-              stage: 1,
+              stage: 7,
+              // Add more fields as needed
             },
           };
-
+  
           updateStageInFirestore(updateParams)
-          .then(async () => {
-            try {
-              console.log("good");
-               } catch (error) {
-              console.error("Error in initialStage.exec:", error);
-              // Handle the error as needed, such as logging, sending a response, etc.
-            }
-          })
+            .then(async () => {
+              await Whatsapp.sendSimpleButtons({
+                message: "Please type out your address or descripion of where we will find you📍",
+                recipientPhone: from,
+                listOfButtons: [
+                  {
+                    title: "Cancel",
+                    id: "Cancel",
+                  },
+                ],
+              });
+  
+              // Stage updated successfully
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
+  
 
-          console.log(restaurantData)
-
-          await Whatsapp.sendRadioButtons({
-            recipientPhone: from,
-            headerText: "Please Select Another Resturant",
-            bodyText: "All restaurants on this app are trusted brands",
-            footerText: "Approved by Cloudy Delivery",
-
-            listOfSections: [
-              {
-                title: "Top 10 Restaurant",
-                rows: restaurantData,
-              },
-            ],
-          });
-
-
-
-        }
-
-      
-
-
-    }
-    
+      }
 
       const menuItems = menu[Thelastrelpy_id];
 
@@ -263,6 +333,9 @@ export const stageTwo = {
 
           // const total = items.length;
 
+          var restaurant  = await getFieldValueFromFirestore(from, "Restaurant");
+
+
            const totalPrice = items.reduce((total, item) => {
                         // Extract the numeric part of the price and convert it to a number
                         const itemPrice = Number(item.price.replace('R', ''));
@@ -273,7 +346,7 @@ export const stageTwo = {
 
            const order_summery =  `🗒️ *YOUR ORDER*: \n\n*${desserts}* \n\n💰 Total amount: *${
             totalPrice
-          },00*. \n🚚 Delivery fee: R20. \n⏳ Delivery time: *50 minutes*. \n` +
+          },00*. \n🚚 Delivery fee: R20. \n🏡 Restaurants: ${restaurant} \n⏳ Delivery time: *50 minutes*. \n` +
                 '🔊 ```The driver will come to fecth the money to pay the Resturants.```'
 
             //console.log(order_summery)
@@ -371,7 +444,7 @@ export const stageTwo = {
            // storage[from].errands = message;
   
             await Whatsapp.sendSimpleButtons({
-              message: "🗺️ Now enter the ADDRESS (Number, Street, Neighborhood)  🏠✉️🌍",
+              message: "Please type out your address or descripion of where we will find you📍",
               recipientPhone: from,
               listOfButtons: [
                   {

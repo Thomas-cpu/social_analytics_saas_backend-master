@@ -72,7 +72,7 @@ let number;
 
 let Whatsapp = new WhatsappCloudAPI({
   accessToken:
-    "EABRU3YnVXC0BO4HjZAqlPwgnIDTFNXAtmFpfoxGJJ7BKij836aHKCjr1kLT6hooyrfynLoanNA2psbRLFcQGC6YIJHzSfIXQEVWu6Jfx8znYkHRAZAdHyS8bangJZB9yJ7qaqL3l7Im5jGDAqa0nNW8qaDC8yoBdbjhqVIVZChMRF4vgugNX13kx69eICu0YnZBjby71oz3anOk7eX1bg",
+    "EABRU3YnVXC0BO3dIGJuZBZAcVdZB8rwJEpUYPBik0CrRQLjI4FQe04AA28tUHq7BRkz5xhzOEnC3m3eU2ssDr9qvTtmJ9HMxboDFHGGbAIF0ZATIlAv9ZAVrxO2K1liTxBex3Sbg8RNlXnMFYbvxYSk77uHP0CDopU7BvFhis3SxZB8ZAVPOebxCx5b8ywZBaZCMVV4tDZAOGihXMzIkp3jhcZD",
   senderPhoneNumberId: "107594839093339",
   WABA_ID: "112423675271755",
 });
@@ -200,7 +200,7 @@ router.post("/callback", async (req, res) => {
 
                       console.log(getcurrentdriver)
 
-                        if(getcurrentdriver==""){
+                        if(getcurrentdriver=="" || getcurrentdriver==recipientPhone){
                              
 
                           if (currentStage === 9) {
@@ -291,6 +291,7 @@ router.post("/callback", async (req, res) => {
                           
                       const randomOrderNumber = generateRandomOrderNumber();
 
+
                       db.collection("Orders")
                         .doc(randomOrderNumber)
                         .set({
@@ -313,34 +314,48 @@ router.post("/callback", async (req, res) => {
                           );
                         });
 
-                        var updatesomestuff = {
-                          from: incomingMessage.button_reply.id.slice(0, 11),
-                          updatedFields: {
-                            order_no: randomOrderNumber,
-                          },
-                        };
-  
-                        updateStageInFirestore(updatesomestuff)
-                          .then(async () => {
+                        
 
-                            await Whatsapp.sendText({
-                              message:
-                                "Your orderNo#" +
-                                randomOrderNumber +
-                                " 🚗 Your driver is " +
-                                drivername +
-                                " and he is on his way to you!",
-                              recipientPhone: incomingMessage.button_reply.id.slice(
-                                0,
-                                11
-                              ),
-                            });
+                         var order_no = await getFieldValueFromFirestore(incomingMessage.button_reply.id.slice(0, 11), "order_no");
 
-                          })
+                          if(order_no){
+
+                            randomOrderNumber = order_no;
+
+                          }else{
+
+                              var updatesomestuff = {
+                                from: incomingMessage.button_reply.id.slice(0, 11),
+                                updatedFields: {
+                                  order_no: randomOrderNumber,
+                                },
+                              };
+                        
+
+                          }
+                      
   
-                          .catch((error) => {
-                            console.error("Error:", error);
-                          });
+                            updateStageInFirestore(updatesomestuff)
+                              .then(async () => {
+
+                                await Whatsapp.sendText({
+                                  message:
+                                    "Your orderNo#" +
+                                    randomOrderNumber +
+                                    " 🚗 Your driver is " +
+                                    drivername +
+                                    " and he is on his way to you!",
+                                  recipientPhone: incomingMessage.button_reply.id.slice(
+                                    0,
+                                    11
+                                  ),
+                                });
+
+                              })
+      
+                              .catch((error) => {
+                                console.error("Error:", error);
+                              });
                              
                         }else{
                             await Whatsapp.sendText({
@@ -364,8 +379,6 @@ router.post("/callback", async (req, res) => {
                 var driver = await getFieldValueFromFirestore(number, "driver");
 
                 if (driver.trim() === "") {
-
-                
 
                   const fromData = { from: number };
 
@@ -409,11 +422,7 @@ router.post("/callback", async (req, res) => {
 
                 //let number = incomingMessage.button_reply.id.slice(0, 11);
 
-              
-
                 console.log("This is the recipient", number)
-
-              
 
                 var order_no = await getFieldValueFromFirestore(number, "order_no");  
 
@@ -437,12 +446,6 @@ router.post("/callback", async (req, res) => {
                         console.log(currentStage);
 
                         // const currentStage = getStage({ from: customernumber});
-
-                       
-
-                       
-
-
 
                         const messageResponse = stages[currentStage].stage.exec(
                           {
@@ -530,7 +533,9 @@ router.post("/callback", async (req, res) => {
 
           getStage(fromData)
             .then(async (currentStage) => {
+
               if (currentStage == 4) {
+
                 const afterAt = incomingMessage.button_reply.id.split("@")[1];
 
                 const result = afterAt.split("&")[0];
@@ -554,10 +559,12 @@ router.post("/callback", async (req, res) => {
 
                       updateStatusById(items, result, "Accepted");
 
+                      var order_number = await getFieldValueFromFirestore(incomingMessage.button_reply.id.split("@")[0], "order_no");
+
                       await Whatsapp.sendText({
                         message:
-                          "Hi Your order " +
-                          getDescriptionById(menu, result) +
+                          "Hi Your order #" +
+                          order_number +
                           " Has been accepted and is being prepared",
                         recipientPhone: incomingMessage.button_reply.id.split(
                           "@"
@@ -566,8 +573,8 @@ router.post("/callback", async (req, res) => {
 
                       await Whatsapp.sendSimpleButtons({
                         message:
-                          "Hi is order " +
-                          getDescriptionById(menu, result) +
+                          "Hi is order #" +order_number
+                          +
                           " complete ?",
                         recipientPhone: recipientPhone,
                         listOfButtons: [

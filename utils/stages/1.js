@@ -23,6 +23,7 @@ const fetchRestaurants = async () => {
   }
 };
 
+
 ////////////////////////////////////////////////
 
 export const stageOne = {
@@ -46,15 +47,25 @@ export const stageOne = {
             // Fetch restaurant data and replace existing rows
             const restaurantData = await fetchRestaurants();
 
+            console.log(restaurantData)
+
             // console.log(restaurantData.length);
 
             if (restaurantData.length === 0) {
-              console.log("The best thing ever");
 
-              await Whatsapp.sendText({
+             // console.log("The best thing ever");
+
+              await Whatsapp.sendSimpleButtons({
                 message:
                   "Hi unfortunately there are no resturants available at moment please try again in 10 minutes",
                 recipientPhone: from,
+                listOfButtons: [
+                  {
+                    title: "Request Delivery",
+                    id: "Errands",
+                  },
+               
+                ],
               });
 
         
@@ -86,6 +97,12 @@ export const stageOne = {
 
               console.log(restaurantData);
 
+              restaurantData.push({
+                title: "Other",
+                description: "If the restaurant you are seeking doesn't exist.",
+                id: "Other"
+              });
+
               await Whatsapp.sendRadioButtons({
                 recipientPhone: from,
                 headerText: "Select the restaurant you want",
@@ -110,6 +127,8 @@ export const stageOne = {
           });
           
       } else if (incomingMessage.button_reply.id === "Errands") {
+
+
         const updateParams = {
           from: from,
           updatedFields: {
@@ -136,6 +155,9 @@ export const stageOne = {
           .catch((error) => {
             console.error("Error:", error);
           });
+
+          
+
       }
     } else {
 
