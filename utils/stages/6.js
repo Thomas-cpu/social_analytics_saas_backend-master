@@ -46,10 +46,10 @@ export const stagesix = {
                       title: "Request Delivery",
                       id: "Errands",
                     },
-                    // {
-                    //   title: "Order food",
-                    //   id: "Shopping",
-                    // },
+                    {
+                      title: "Order food",
+                      id: "Shopping",
+                    },
                  
                   ],
                 });
