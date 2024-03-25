@@ -9,6 +9,7 @@ export const initialStage = {
         from: from,
         updatedFields: {
           stage: 1,
+          order_sent:"No"
         },
       };
 

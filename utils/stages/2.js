@@ -4,6 +4,30 @@ import { getFieldValueFromFirestore } from "../stages.js";
 import { updateStageInFirestore } from "../stages.js";
 
 
+function reduceString(str) {
+  // Check if the string length is greater than 20
+  if (str.length > 20) {
+    // If so, return the first 20 characters of the string
+    return str.slice(0, 20);
+  } else {
+    // Otherwise, return the string as is
+    return str;
+  }
+}
+
+
+function reduceStringD(str) {
+  // Check if the string length is greater than 20
+  if (str.length > 70) {
+    // If so, return the first 20 characters of the string
+    return str.slice(0, 70);
+  } else {
+    // Otherwise, return the string as is
+    return str;
+  }
+}
+
+
 const fetchRestaurants = async () => {
   try {
     const snapshot = await restaurantsCollection
@@ -23,7 +47,6 @@ const fetchRestaurants = async () => {
     throw error;
   }
 };
-
 
 
 var Thelastrelpy_id;
@@ -59,6 +82,7 @@ export const stageTwo = {
 
                 updateStageInFirestore(updateParams)
                   .then(async () => {
+
               
                   })
                   .catch((error) => {
@@ -78,11 +102,13 @@ export const stageTwo = {
                   Thelastrelpy_id=incomingMessage.list_reply.id;
           
                   if(menuItems){
+
+                   // console.log(menuItems)
           
                     const transformedItems = menuItems.map(item => {
                       return {
-                        title: item.title,
-                        description: item.description,
+                        title: reduceString(item.title),
+                        description: reduceStringD(item.description),
                         id: item.id
                       };
           
@@ -281,6 +307,7 @@ export const stageTwo = {
 
     if(incomingMessage.button_reply){
 
+
       const restaurantExists = await checkRestaurantExists(Thelastrelpy_id);
 
         if(incomingMessage.button_reply.id=='add_more'){
@@ -371,7 +398,7 @@ export const stageTwo = {
                 ]
             })
 
-        }else if(incomingMessage.button_reply.id=='cancel'){
+        }else if(incomingMessage.button_reply.id=='Cancel'){
 
           const updateParams = {
             from: from,
