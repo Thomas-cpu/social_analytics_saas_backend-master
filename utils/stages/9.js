@@ -27,6 +27,9 @@ export const stagenine = {
       var order = await getFieldValueFromFirestore(customer, "order_no");
 
       var errands = await getFieldValueFromFirestore(customer, "errands");
+
+
+
       
       updateDocument('Orders',order, fieldsToUpdate);
 
@@ -84,6 +87,7 @@ export const stagenine = {
           updatedFields: {
             stage: 1,
             driver:""
+         
           },
         };
 
@@ -92,9 +96,11 @@ export const stagenine = {
             const fieldName = "errands";
 
             await Whatsapp.sendText({
+
               message: 'We will welcome you back anytime 😀',
               recipientPhone: from,
-          }); 
+
+            }); 
 
           await Whatsapp.sendSimpleButtons({
             message:
@@ -116,11 +122,42 @@ export const stagenine = {
             ],
           });
 
+          var driver = await getFieldValueFromFirestore(from, "driver");
+
+          var Order = await getFieldValueFromFirestore(from, "order_no");
+
+          var address = await getFieldValueFromFirestore(from, "address");
+       
+
+          await Whatsapp.sendText({
+
+            message: `Your order #${Order}, address: ${address} has been cancelled`,
+            recipientPhone: driver,
+            
+          }); 
+
+
+          await Whatsapp.sendText({
+
+            message: `The order #${Order}, address: ${address} has been cancelled`,
+            recipientPhone:2716880654,
+            
+          }); 
+
+
+
           
       })
       .catch((error) => {
         console.error("Error:", error);
       });
+
+    }else if(incomingMessage.button_reply.id ==="continue"){
+
+          await Whatsapp.sendText({
+            message: 'Thank you for your response 😀',
+            recipientPhone: from,
+        }); 
 
     }
 
@@ -145,9 +182,12 @@ export const stagenine = {
             "Your designated driver is en route to your location.",
           recipientPhone: from,
           listOfButtons: [
-          
             {
-              title: "Cancel Request",
+              title: "Continue delivery",
+              id: "continue",
+            },
+            {
+              title: "Cancel",
               id: "cancel",
             },
           ],

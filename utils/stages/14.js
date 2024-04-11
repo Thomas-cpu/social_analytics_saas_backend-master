@@ -86,73 +86,51 @@ export const stagefourteen = {
       })
 
             
-        }
+    }else if(incomingMessage.button_reply.id === 'hasnotcompleed'){
+
+
+      
+        await Whatsapp.sendSimpleButtons({
+          message:
+              "DO you want to?",
+            recipientPhone: from,
+            listOfButtons: [
+              {
+                title: "Continue delivery",
+                id: "continue",
+              },
+              {
+                title: "Cancel",
+                id: "cancel",
+              },
+            ],
+        });
+         
+
+    }
 
 
 
     }else{
 
 
-      const updateParams = {
-        from: from,
-        updatedFields: {
-          stage: 15,
-          // Add more fields as needed
-        },
-      };
-
-      updateStageInFirestore(updateParams)
-        .then(async () => {
-
-
-          await Whatsapp.sendRadioButtons({
+        
+        await Whatsapp.sendSimpleButtons({
+          message:
+              "The driver has finished with your request/order preparing to come back.",
             recipientPhone: from,
-            headerText: 'Rate our driver',
-            bodyText:'Please rate our driver to continue to give better customer service',
-            footerText: "Click here to rate",
-            listOfSections: [
-                {
-                    title: 'Ratings',
-                    rows: [
-
-                            {
-                                title: '1 star',
-                                description: ' ',
-                                id: '1_star',
-                            },
-                            {
-                                title: '2 star',
-                                description:' ',
-                                id: '2_star',
-                            },
-                            {
-                                title: '3 star',
-                                description:' ',
-                                id: '3_star',
-                            },    
-                            {
-                              title: '4 star',
-                              description:' ',
-                              id: '4_star',
-                          },
-                          {
-                            title: '5 star',
-                            description:' ',
-                            id: '5_star',
-                          },
-
-                    ],
-                },
-
-
+            listOfButtons: [
+              {
+                title: "Continue delivery",
+                id: "continue",
+              },
+              {
+                title: "Cancel",
+                id: "cancel",
+              },
             ],
         });
-
-
-  
-    })
-
-
+   
 
 
     }

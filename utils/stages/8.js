@@ -128,7 +128,7 @@ export const stageeight= {
               // Stage updated successfully
               await Whatsapp.sendText({
                 message: 'We will welcome you back anytime 😀',
-                recipientPhone: customer,
+                recipientPhone: from,
             }); 
               
               await Whatsapp.sendSimpleButtons({

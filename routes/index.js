@@ -225,7 +225,7 @@ router.post("/callback", async (req, res) => {
                             }, 0);
     
                             The_messeage =
-                              "Food Order Request\n\n" +
+                              "Request\n\n" +
                               "REQUEST : " +
                               errands +
                               "\n\nADDRESS : " +
@@ -359,6 +359,7 @@ router.post("/callback", async (req, res) => {
                               });
                              
                         }else{
+
                             await Whatsapp.sendText({
                               message:"Sorry this trip has been taken by another driver",
                               recipientPhone: incomingMessage.from.phone,
