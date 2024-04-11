@@ -163,9 +163,6 @@ export const stageTwo = {
         
                   }
           
-                
-          
-                  ////ends here ///
               }
 
 
