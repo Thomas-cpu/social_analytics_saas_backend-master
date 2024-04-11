@@ -49,14 +49,32 @@ export const stagesixteen = {
     updateStageInFirestore(updateParams)
       .then(async () => {
 
+        if(incomingMessage.text.body){
+
+          const newItem = {
+
+            ratings: rating,
+            client:from,
+            Comments:incomingMessage.text.body,
+      
+          };
+
+        }else{
+
+          const newItem = {
+
+            ratings: rating,
+            client:from,
+            Comments:"The best only from clints I hope",
+      
+          };
+
+
+
+        }
+
   
-    const newItem = {
-
-      ratings: rating,
-      client:from,
-      Comments:incomingMessage.text.body,
-
-    };
+ 
 
 
   db.collection(collectionName)

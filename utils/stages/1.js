@@ -161,11 +161,14 @@ export const stageOne = {
       }
     } else {
 
+
+
       
       const updateParams = {
         from: from,
         updatedFields: {
           stage: 1,
+          order_sent:"No"
           // Add more fields as needed
         },
       };
@@ -186,10 +189,10 @@ export const stageOne = {
                     title: "Request Delivery",
                     id: "Errands",
                   },
-                  // {
-                  //   title: "Order food",
-                  //   id: "Shopping",
-                  // },
+                  {
+                    title: "Order food",
+                    id: "Shopping",
+                  },
                 ],
               });
 

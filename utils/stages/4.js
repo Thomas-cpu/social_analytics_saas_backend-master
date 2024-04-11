@@ -3,6 +3,8 @@ import { menu } from '../menu.js';
 import {driver} from '../driver.js'
 import { restaurants } from '../restaurants.js';
 import { getFieldValueFromFirestore } from "../stages.js";
+import { updateStageInFirestore } from "../stages.js";
+
 
 
 function findItemById(id) {
@@ -43,6 +45,27 @@ export const stageFour = {
   async exec({from,incomingMessage,message,Whatsapp,recipientName}) {
 
 
+  if(await getFieldValueFromFirestore(from, "order_sent")=="No"){
+
+          
+    const updateParams = {
+      from: from,
+      updatedFields: {
+        order_sent: "Yes",
+      },
+    };
+
+    updateStageInFirestore(updateParams)
+      .then(async () => {
+        
+  
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+
+
+
     let desserts = '';
 
     var items = await getFieldValueFromFirestore(from, "items");
@@ -75,40 +98,119 @@ export const stageFour = {
       '🔊 ```You will go the client location to fetch money for the resturant```'
 
 
-   
-    Object.keys(driver).map(async (value) => {
-      const element = driver[value];
-
-        await Whatsapp.sendSimpleButtons({
-
-          message:order_summery,
-          recipientPhone: value,
-          listOfButtons: [
+      Object.keys(driver).map(async (value) => {
+        try {
+          const element = driver[value];
+      
+          await Whatsapp.sendSimpleButtons({
+            message: order_summery,
+            recipientPhone: value,
+            listOfButtons: [
               {
-                  title: 'Accept',
-                  id:from+'@'+'accept',
+                title: 'Accept',
+                id: from + '@' + 'accept',
               },
-            //   {
-            //     title: 'Reject',
-            //     id:from+'@'+'rejected',
-            // },
-        
-          ]
+              //   {
+              //     title: 'Reject',
+              //     id:from+'@'+'rejected',
+              // },
+            ]
+          });
+        } catch (error) {
+          // Handle any errors that occur during sending the buttons
+          console.error("Error sending buttons to recipient:", value, error);
+        }
+      });
+      
 
-          
+
+
+      try {
+
+        await Whatsapp.sendText({
+          message: 'Your order has been sent. It will be processed shortly. 😀',
+          recipientPhone: from,
         });
+        
+      } catch (error) {
+        // Handle any errors that occur during sending the text message
+        console.error("Error sending text message:", error);
+      }
 
 
-    })
+  }else{
 
 
-    await Whatsapp.sendText({
-      message: 'Your order has been sent. It will be processed shortly. 😀',
-      recipientPhone: from,
-  }); 
-    
+    if (!incomingMessage.button_reply) {
 
-    
+      await Whatsapp.sendSimpleButtons({
+        message: 'Your order has been sent. It will be processed shortly. 😀',
+        recipientPhone: from,
+        listOfButtons: [
+          {
+            title: "Cancel Order",
+            id: "Cancel",
+          },
+         
+        ],
+      });
+  
+
+    }
+  
+
+  }
+
+  if (incomingMessage.button_reply) {
+    if (incomingMessage.button_reply.id === "Cancel"){
+
+        
+      const updateParams = {
+        from: from,
+        updatedFields: {
+          stage: 1,
+          order_sent:"No",
+          items:""
+          // Add more fields as needed
+        },
+      };
+
+      updateStageInFirestore(updateParams)
+        .then(async () => {
+          try {
+            //storage[from].stage = 1;
+
+              await Whatsapp.sendSimpleButtons({
+                message:
+                  " Molweni " +
+                  recipientName +
+                  "😀\n\nWe are open Monday - Sunday from 10am - 7pm⏰\n\nHow can we help you today?",
+                recipientPhone: from,
+                listOfButtons: [
+                  {
+                    title: "Request Delivery",
+                    id: "Errands",
+                  },
+                  {
+                    title: "Order food",
+                    id: "Shopping",
+                  },
+                ],
+              });
+
+
+          } catch (error) {
+            console.error("Error in initialStage.exec:", error);
+            // Handle the error as needed, such as logging, sending a response, etc.
+          }
+        })
+        
+
+    }
+
+
+  }
+
 
   },
 };
