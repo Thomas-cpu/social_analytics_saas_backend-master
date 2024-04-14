@@ -114,13 +114,11 @@ export const stageOne = {
     if (incomingMessage.button_reply) {
       if (incomingMessage.button_reply.id === "Shopping") {
 
-
-
-
         const updateParams = {
           from: from,
           updatedFields: {
             stage: 2,
+            pageon: 1
             // Add more fields as needed
           },
         };

@@ -15,6 +15,10 @@ function reduceString(str) {
   }
 }
 
+function isNumber(value) {
+  return !isNaN(parseFloat(value)) && isFinite(value);
+}
+
 var page =1 ;
 
 var previous_page = 1;
@@ -39,7 +43,7 @@ const fetchRestaurants = async () => {
       title: reduceString(doc.data().name),
       description: reduceStringD(doc.data().description),
       id: doc.data().name,
-      index: index++, // Assign the current index and increment it for the next item
+      
     }));
 
   } catch (error) {
@@ -103,146 +107,215 @@ export const stageTwo = {
 
       var restaurant  = await getFieldValueFromFirestore(from, "Restaurant");
 
-         // console.log(incomingMessage.list_reply.id);
-
 
         if(incomingMessage.list_reply.id!="Other"){
 
 
+          if(!isNumber(incomingMessage.list_reply.id)){
+
             if(!restaurant){
-
-                const updateParams = {
-                  from: from,
-                  updatedFields: {
-                    Restaurant: incomingMessage.list_reply.id,
-                  },
-                };
-
-                updateStageInFirestore(updateParams)
-                  .then(async () => {
-
               
-                  })
-                  .catch((error) => {
-                    console.error("Error:", error);
-                  });
+              const updateParams = {
+                from: from,
+                updatedFields: {
+                  Restaurant: incomingMessage.list_reply.id,
+                },
+              };
+
+              updateStageInFirestore(updateParams)
+                .then(async () => {
+
+            
+                })
+                .catch((error) => {
+                  console.error("Error:", error);
+                });
 
 
             } 
-          
-
-              const restaurantExists = await checkRestaurantExists(incomingMessage.list_reply.id);
-
-              if(restaurantExists){
-          
-                  const menuItems = menu[incomingMessage.list_reply.id];
-          
-                  Thelastrelpy_id=incomingMessage.list_reply.id;
-          
-                  if(menuItems){
-
-                   // console.log(menuItems)
-          
-                    const transformedItems = menuItems.map(item => {
-                      return {
-                        title: reduceString(item.title),
-                        description: reduceStringD(item.description),
-                        id: item.id
-                      };
-          
-                    });
-          
-          
-                    await Whatsapp.sendRadioButtons({
-                      
-                      recipientPhone: from,
-                      headerText: incomingMessage.list_reply.id+' Food Menu',
-                      bodyText:
-                          'Pick one product at a time',
-                      footerText: 'Approved by Cloudy deliveries',
-                      listOfSections: [
-                          {
-                              title: 'Food Menu',
-                              rows: transformedItems,
-                          },
-          
-                      ],
-                  });
-          
-                    
-          
-                  }else{
-          
-                            await Whatsapp.sendText({
-                              message:
-                                "The Menu for this Resturant has not be added yet",
-                              recipientPhone: from,
-                            });
-                  
-                            const updateParams = {
-                              from: from,
-                              updatedFields: {
-                                stage: 1,
-                              },
-                            };
-                  
-                            updateStageInFirestore(updateParams)
-                            .then(async () => {
-                              try {
-                           
-                                } catch (error) {
-                                console.error("Error in initialStage.exec:", error);
-                                // Handle the error as needed, such as logging, sending a response, etc.
-                              }
-                            })
-
-
-                            ////end of the message ///
-
-                              const restaurantData = await fetchRestaurants();
-
-                              const startIndex = 1; // Start index
-                              const endIndex = 5; // End index
-
-                              const slicedData = [];
-
-                              for (let i = startIndex - 1; i < endIndex && i < restaurantData.length; i++) {
-                                slicedData.push(restaurantData[i]);
-
-                               // console.log(slicedData);
-                              }
-
-                             
-
-                             // console.log(restaurantData);
-
-                              restaurantData.push({
-                                title: "Other",
-                                description: "If the restaurant you are seeking doesn't exist.",
-                                id: "Other"
-                              });
-
-                            await Whatsapp.sendRadioButtons({
-                              recipientPhone: from,
-                              headerText: "Please Select Another Resturant",
-                              bodyText: "All restaurants on this app are trusted brands",
-                              footerText: "Approved by Cloudy Delivery",
-                  
-                              listOfSections: [
-                                {
-                                  title: "Top 10 Restaurant",
-                                  rows: restaurantData,
-                                },
-                              ],
-                            });
-
-
-                            ///end///
-          
         
-                  }
+
+            const restaurantExists = await checkRestaurantExists(incomingMessage.list_reply.id);
+
+            if(restaurantExists){
+        
+                const menuItems = menu[incomingMessage.list_reply.id];
+        
+                Thelastrelpy_id=incomingMessage.list_reply.id;
+        
+                if(menuItems){
+        
+                  const transformedItems = menuItems.map(item => {
+                    return {
+                      title: reduceString(item.title),
+                      description: reduceStringD(item.description),
+                      id: item.id
+                    };
+        
+                  });
+        
+        
+                  await Whatsapp.sendRadioButtons({
+                    
+                    recipientPhone: from,
+                    headerText: incomingMessage.list_reply.id+' Food Menu',
+                    bodyText:
+                        'Pick one product at a time',
+                    footerText: 'Approved by Cloudy deliveries',
+                    listOfSections: [
+                        {
+                            title: 'Food Menu',
+                            rows: transformedItems,
+                        },
+        
+                    ],
+                });
+        
+                  
+        
+                }else{
+        
+                          await Whatsapp.sendText({
+                            message:
+                              "The Menu for this Resturant has not be added yet",
+                            recipientPhone: from,
+                          });
+                
+                          const updateParams = {
+                            from: from,
+                            updatedFields: {
+                              stage: 1,
+                            },
+                          };
+                
+                          updateStageInFirestore(updateParams)
+                          .then(async () => {
+                            try {
+                         
+                              } catch (error) {
+                              console.error("Error in initialStage.exec:", error);
+                              // Handle the error as needed, such as logging, sending a response, etc.
+                            }
+                          })
+
+                            const restaurantData = await fetchRestaurants();
+
+                            const startIndex = 1; // Start index
+                            const endIndex = 5; // End index
+
+                            const slicedData = [];
+
+                            for (let i = startIndex - 1; i < endIndex && i < restaurantData.length; i++) {
+                              slicedData.push(restaurantData[i]);
+
+                            }
+
+                            restaurantData.push({
+                              title: "Other",
+                              description: "If the restaurant you are seeking doesn't exist.",
+                              id: "Other"
+                            });
+
+                          await Whatsapp.sendRadioButtons({
+                            recipientPhone: from,
+                            headerText: "Please Select Another Resturant",
+                            bodyText: "All restaurants on this app are trusted brands",
+                            footerText: "Approved by Cloudy Delivery",
+                
+                            listOfSections: [
+                              {
+                                title: "Top 10 Restaurant",
+                                rows: restaurantData,
+                              },
+                            ],
+                          });
+
+
+                          ///end///
+        
+      
+                }
+        
+            }
+
+
+
+
+           }else{
+
+               var pageon = await getFieldValueFromFirestore(from, "pageon")
           
-              }
+                if(pageon==1){
+
+              
+                  const updateParams = {
+                    from: from,
+                    updatedFields: {
+                      stage: 2,
+                      pageon:2
+                  
+                    },
+                  };
+          
+                  updateStageInFirestore(updateParams)
+                  .then(async () => {
+
+
+                    getPage(2, 3).then(async page1 => {
+
+                  
+                      page1.data.push({
+                      title: "Go to page 3",
+                      description: "You are in page 2",
+                      id: 3
+                    });
+      
+                    previouspage = previous_page-1;
+      
+                    page1.data.push({
+                      title: "Go back",
+                      description: "Go back to page 1",
+                      id: 1
+                    });
+      
+                    console.log(page1.data)
+              
+      
+                    await Whatsapp.sendRadioButtons({
+                      recipientPhone: from,
+                      headerText: "Select the restaurant you want",
+                      bodyText: "All restaurants on this app are trusted brands",
+                      footerText: "Approved by Cloudy Delivery",
+              
+                      listOfSections: [
+                        {
+                          title: "Top Restaurants",
+                          rows: page1.data,
+                        },
+                      ],
+                    });
+      
+                    
+      
+                  });
+      
+                  previous_page = 1;
+                  page = 3;
+
+
+                })
+
+
+    
+                }
+
+
+
+           }
+
+
+
+
 
 
         }else{
@@ -334,10 +407,8 @@ export const stageTwo = {
           }
         })
 
-
-
-
-            }
+        
+         }
 
 
         }
@@ -383,6 +454,7 @@ export const stageTwo = {
                 ],
               });
 
+              
 
             });
 
@@ -391,7 +463,7 @@ export const stageTwo = {
 
          }else{
 
-          
+        
           getPage(page, 3).then(async page1 => {
 
                 
@@ -435,9 +507,14 @@ export const stageTwo = {
          }
 
           
-        }
-        
-        // else{
+        }else{
+
+          
+        //   console.log("page", page);
+
+        //   console.log("page", previous_page);
+
+        //   console.log("page", previouspage);
 
 
         //   previouspage = previous_page-1;
@@ -486,11 +563,6 @@ export const stageTwo = {
         //   });
 
 
-        //   console.log("page", page);
-
-        //   console.log("page", previous_page);
-
-        //   console.log("page", previouspage);
 
 
         // });
@@ -500,7 +572,7 @@ export const stageTwo = {
 
 
 
-        // }
+        }
 
 
         

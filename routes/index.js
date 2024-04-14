@@ -73,7 +73,7 @@ let number;
 
 let Whatsapp = new WhatsappCloudAPI({
   accessToken:
-    "EAAMdhVfHQAsBO5zKH4gQZAx7LvHxVYYcKHB2SzHvfMTT1QeYjP0g0bq9rr8KNUTxdmWMyh8hWLQwGEJNOUamjsZChxVKy4P8is9Ui0XLGkpdcixaXQVRxdbumbl4y95bMPKPhuslyfk0AwpmMsAj3U9ZAeCtwfoLZA0KTyNY7fWyeoI94lVBszFMkpRj4FvsqSZAXIT8i9Nxbg4NqnMUZD",
+    "EAAMdhVfHQAsBOyBUa2Tz3efCVDYKfrx2cTpDbrpkERIgTZAJtlsBXDF75gaLiPNK1Yt2bTDTllNh0tZBVwHQE7tONuKrPpHEOhl1iZBGsgT5moorxextzEfQOujZAdrPLiTuiZBMczy0dcOvSRZCc2jsGnCyY7ngWAzTWL4xKLGNzzltCLluABy70RYZBooh3J8ssE8ZAY4QvRiLUXAKw0AZD",
   senderPhoneNumberId: "166159806581123",
   WABA_ID: "145025998701740",
 });
@@ -601,7 +601,7 @@ router.post("/callback", async (req, res) => {
                     "items"
                   );
 
-                  updateStatusById(items, result, "Accepted");
+                  updateStatusById(items, result, "rejected");
 
                   await Whatsapp.sendText({
                     message:
@@ -611,14 +611,37 @@ router.post("/callback", async (req, res) => {
                     )[0],
                   });
 
-                  
 
-                  await Whatsapp.sendText({
-                    message:
-                      "Please state your reason for rejecting the order ",
-                    recipientPhone: recipientPhone,
-                  });
+                    
+                const updateParams = {
+                  from: incomingMessage.button_reply.id.split(
+                    "@"
+                  )[0],
+                  updatedFields: {
+                    stage: 18,
+                   // order_sent:"No",
+                   // items:[]
 
+                  },
+                };
+                
+
+                updateStageInFirestore(updateParams)
+                  .then(async () => {
+                    try {
+                      
+                      await Whatsapp.sendText({
+                        message:
+                          "Please state your reason for rejecting the order ",
+                        recipientPhone: recipientPhone,
+                      });
+
+                    } catch (error) {
+                      console.error("Error in initialStage.exec:", error);
+                      // Handle the error as needed, such as logging, sending a response, etc.
+                    }
+                  })
+        
 
                 }
               } else {

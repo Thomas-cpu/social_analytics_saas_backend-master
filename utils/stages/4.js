@@ -170,7 +170,7 @@ export const stageFour = {
 
     if (incomingMessage.button_reply.id === "Cancel"){
 
-        
+  
       const updateParams = {
         from: from,
         updatedFields: {
