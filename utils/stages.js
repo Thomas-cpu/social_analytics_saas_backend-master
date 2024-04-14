@@ -16,7 +16,8 @@ import {
   stagefourteen,
   stagefiveteen,
   stagesixteen,
-  stageseventeen
+  stageseventeen,
+  stageeightteen,
 
 } from './stages/index.js';
 
@@ -97,6 +98,10 @@ export const stages = [
   {
     descricao: 'Looking for driver for resturant',
     stage: stageseventeen,
+  },
+  {
+    descricao: 'Sending reject reason',
+    stage: stageeightteen,
   },
 
 ];
