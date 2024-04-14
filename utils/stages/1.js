@@ -3,17 +3,100 @@ import { updateStageInFirestore } from "../stages.js";
 
 const restaurantsCollection = db.collection("restaurant");
 
+async function getPage(pageNumber, pageSize) {
+  const startIndex = (pageNumber - 1) * pageSize;
+  const restaurantData = await fetchRestaurants();
+  const totalItems = restaurantData.length;
+  const maxPage = Math.ceil(totalItems / pageSize);
+
+  if (pageNumber < 1 || pageNumber > maxPage) {
+    console.log(`Page ${pageNumber} does not exist. Please select a valid page.`);
+    return [];
+  }
+
+  let endIndex = startIndex + pageSize;
+  if (endIndex > totalItems) {
+    endIndex = totalItems; // Set endIndex to totalItems if it exceeds the total number of items
+  }
+
+  return {
+    data: restaurantData.slice(startIndex, endIndex),
+    maxPage: maxPage
+  };
+}
+
+var page =1 ;
+
+var previous_page = 1;
+
+var previouspage = 1;
+
+var maxpage;
+
+
+function reduceStringD(str) {
+  // Check if the string length is greater than 20
+  if (str.length > 70) {
+    // If so, return the first 20 characters of the string
+    return str.slice(0, 70);
+  } else {
+    // Otherwise, return the string as is
+    return str;
+  }
+}
+
+
+
+function reduceString(str) {
+  // Check if the string length is greater than 20
+  if (str.length > 20) {
+    // If so, return the first 20 characters of the string
+    return str.slice(0, 20);
+  } else {
+    // Otherwise, return the string as is
+    return str;
+  }
+}
+
+
 const fetchRestaurants = async () => {
   try {
     const snapshot = await restaurantsCollection
       .where("status", "==", "online")
+      .limit(9)
       .get();
 
-    return snapshot.docs.map((doc) => ({
-      title: doc.data().name,
-      description: doc.data().description,
-      id: doc.data().name,
-    }));
+      return snapshot.docs.map((doc) => ({
+        title: reduceString(doc.data().name),
+        description: reduceStringD(doc.data().description),
+        id: doc.data().name,
+
+      }));
+
+  } catch (error) {
+    console.error(
+      "Error fetching online restaurant data from Firestore:",
+      error
+    );
+    throw error;
+  }
+};
+
+
+const length_of_resturant = async () => {
+  try {
+    const snapshot = await restaurantsCollection
+      .where("status", "==", "online")
+      .limit(9)
+      .get();
+
+      return snapshot.docs.map((doc) => ({
+        title: reduceString(doc.data().name),
+        description: reduceStringD(doc.data().description),
+        id: doc.data().name,
+
+      }));
+
   } catch (error) {
     console.error(
       "Error fetching online restaurant data from Firestore:",
@@ -47,9 +130,8 @@ export const stageOne = {
             // Fetch restaurant data and replace existing rows
             const restaurantData = await fetchRestaurants();
 
-            console.log(restaurantData)
 
-            // console.log(restaurantData.length);
+             console.log(restaurantData.length);
 
             if (restaurantData.length === 0) {
 
@@ -95,29 +177,54 @@ export const stageOne = {
 
             } else {
 
-              console.log(restaurantData);
 
-              restaurantData.push({
-                title: "Other",
-                description: "If the restaurant you are seeking doesn't exist.",
-                id: "Other"
-              });
+              page =1 ;
 
-              await Whatsapp.sendRadioButtons({
-                recipientPhone: from,
-                headerText: "Select the restaurant you want",
-                bodyText: "All restaurants on this app are trusted brands",
-                footerText: "Approved by Cloudy Delivery",
-
-                listOfSections: [
-                  {
-                    title: "Top 10 Restaurant",
-                    rows: restaurantData,
-                  },
-                ],
-              });
-
+              previous_page = 1;
               
+              previouspage = 1;
+              
+              maxpage;
+        
+                
+        
+                  getPage(page, 8).then(async page1 => {
+        
+        
+                    // console.log("Page 1:", page1);
+        
+        
+                     page1.data.push({
+                      title: "Got to page "+page,
+                      description: "You are in page "+previous_page,
+                      id: page
+                    });
+        
+              
+        
+                    await Whatsapp.sendRadioButtons({
+                      recipientPhone: from,
+                      headerText: "Select the restaurant you want",
+                      bodyText: "All restaurants on this app are trusted brands",
+                      footerText: "Approved by Cloudy Delivery",
+              
+                      listOfSections: [
+                        {
+                          title: "Top Restaurants",
+                          rows: page1.data,
+                        },
+                      ],
+                    });
+        
+                    maxpage = page1.maxPage
+        
+        
+                  });
+        
+                  page = page+1;
+             
+
+           
             }
 
             // Stage updated successfully

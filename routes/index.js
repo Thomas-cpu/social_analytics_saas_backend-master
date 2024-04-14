@@ -73,7 +73,7 @@ let number;
 
 let Whatsapp = new WhatsappCloudAPI({
   accessToken:
-    "EAAMdhVfHQAsBO4NnyTWKLyvMYM0TLqwdpsX8KZAZCPdxuCHeQdvf5NHZADVyVpweW35MVZCkt7XKGbW9dEVdWjwuRsWoey8R9O1U07u3PLApTlqpgRr3nIfbERe1vJwIxXMcgqCRu2w57AYsGXXocB7ZCWAlhlEBlvIZBWUtWdWuiLTId5QXJrtYZCRtyquqQeca8kAZBKuqLLr1yyCZBPASG",
+    "EAAMdhVfHQAsBO5zKH4gQZAx7LvHxVYYcKHB2SzHvfMTT1QeYjP0g0bq9rr8KNUTxdmWMyh8hWLQwGEJNOUamjsZChxVKy4P8is9Ui0XLGkpdcixaXQVRxdbumbl4y95bMPKPhuslyfk0AwpmMsAj3U9ZAeCtwfoLZA0KTyNY7fWyeoI94lVBszFMkpRj4FvsqSZAXIT8i9Nxbg4NqnMUZD",
   senderPhoneNumberId: "166159806581123",
   WABA_ID: "145025998701740",
 });
@@ -554,6 +554,7 @@ router.post("/callback", async (req, res) => {
 
                   updateStageInFirestore(updateParams)
                     .then(async () => {
+
                       var items = await getFieldValueFromFirestore(
                         incomingMessage.button_reply.id.split("@")[0],
                         "items"
@@ -593,22 +594,32 @@ router.post("/callback", async (req, res) => {
 
                   //*///////
                 } else if (incomingMessage.button_reply.id.match(/reject/)) {
-                  updateStatusById(
-                    storage[incomingMessage.button_reply.id.split("@")[0]]
-                      .itens,
-                    result,
-                    "Reject"
+
+
+                  var items = await getFieldValueFromFirestore(
+                    incomingMessage.button_reply.id.split("@")[0],
+                    "items"
                   );
+
+                  updateStatusById(items, result, "Accepted");
 
                   await Whatsapp.sendText({
                     message:
-                      "Hi Your order " +
-                      getDescriptionById(menu, result) +
-                      " Has been rejected",
+                      "Hi Your order Has been rejected",
                     recipientPhone: incomingMessage.button_reply.id.split(
                       "@"
                     )[0],
                   });
+
+                  
+
+                  await Whatsapp.sendText({
+                    message:
+                      "Please state your reason for rejecting the order ",
+                    recipientPhone: recipientPhone,
+                  });
+
+
                 }
               } else {
                 if (incomingMessage.button_reply) {

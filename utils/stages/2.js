@@ -15,6 +15,66 @@ function reduceString(str) {
   }
 }
 
+var page =1 ;
+
+var previous_page = 1;
+
+var previouspage = 1;
+
+var maxpage;
+
+
+
+
+const fetchRestaurants = async () => {
+  try {
+    const snapshot = await restaurantsCollection
+      .where("status", "==", "online")
+      //.limit(9)
+      .get();
+
+    let index = 1; // Initialize the index counter
+
+    return snapshot.docs.map((doc) => ({
+      title: reduceString(doc.data().name),
+      description: reduceStringD(doc.data().description),
+      id: doc.data().name,
+      index: index++, // Assign the current index and increment it for the next item
+    }));
+
+  } catch (error) {
+    console.error("Error fetching online restaurant data from Firestore:", error);
+    throw error;
+  }
+};
+
+
+
+
+async function getPage(pageNumber, pageSize) {
+  const startIndex = (pageNumber - 1) * pageSize;
+  const restaurantData = await fetchRestaurants();
+  const totalItems = restaurantData.length;
+  const maxPage = Math.ceil(totalItems / pageSize);
+
+  if (pageNumber < 1 || pageNumber > maxPage) {
+    console.log(`Page ${pageNumber} does not exist. Please select a valid page.`);
+    return [];
+  }
+
+  let endIndex = startIndex + pageSize;
+  if (endIndex > totalItems) {
+    endIndex = totalItems; // Set endIndex to totalItems if it exceeds the total number of items
+  }
+
+  return {
+    data: restaurantData.slice(startIndex, endIndex),
+    maxPage: maxPage
+  };
+}
+
+
+
 
 function reduceStringD(str) {
   // Check if the string length is greater than 20
@@ -28,25 +88,6 @@ function reduceStringD(str) {
 }
 
 
-const fetchRestaurants = async () => {
-  try {
-    const snapshot = await restaurantsCollection
-      .where("status", "==", "online")
-      .get();
-
-    return snapshot.docs.map((doc) => ({
-      title: doc.data().name,
-      description: doc.data().description,
-      id: doc.data().name,
-    }));
-  } catch (error) {
-    console.error(
-      "Error fetching online restaurant data from Firestore:",
-      error
-    );
-    throw error;
-  }
-};
 
 
 var Thelastrelpy_id;
@@ -62,14 +103,11 @@ export const stageTwo = {
 
       var restaurant  = await getFieldValueFromFirestore(from, "Restaurant");
 
-     // console.log(incomingMessage.list_reply.id);
+         // console.log(incomingMessage.list_reply.id);
 
 
         if(incomingMessage.list_reply.id!="Other"){
 
-              
-             
-                        ///starts here ////////
 
             if(!restaurant){
 
@@ -163,6 +201,21 @@ export const stageTwo = {
 
                               const restaurantData = await fetchRestaurants();
 
+                              const startIndex = 1; // Start index
+                              const endIndex = 5; // End index
+
+                              const slicedData = [];
+
+                              for (let i = startIndex - 1; i < endIndex && i < restaurantData.length; i++) {
+                                slicedData.push(restaurantData[i]);
+
+                               // console.log(slicedData);
+                              }
+
+                             
+
+                             // console.log(restaurantData);
+
                               restaurantData.push({
                                 title: "Other",
                                 description: "If the restaurant you are seeking doesn't exist.",
@@ -238,7 +291,7 @@ export const stageTwo = {
           
           if(updatedItems){
 
-            console.log(updatedItems)
+           // console.log(updatedItems)
 
 
           const updateParams = {
@@ -269,7 +322,7 @@ export const stageTwo = {
                   },
                 {
                   title: 'cancel',
-                  id:'cancel',
+                  id:'Cancel',
               },
                 
               ]
@@ -291,13 +344,222 @@ export const stageTwo = {
 
         }
 
-      
-    }else{
+
+        if(page >previous_page  && incomingMessage.list_reply.id==page){
+
+
+         if(page==maxpage ){
+
+              getPage(page, 3).then(async page1 => {
+
+                
+                page1.data.push({
+                title: "Last Page",
+                description: "You are in page "+previous_page,
+                id: page
+              });
+
+              previouspage = previous_page-1;
+
+              page1.data.push({
+                title: "Go back",
+                description: "Go back to page "+previouspage,
+                id: previouspage
+              });
+
+        
+
+              await Whatsapp.sendRadioButtons({
+                recipientPhone: from,
+                headerText: "Select the restaurant you want",
+                bodyText: "All restaurants on this app are trusted brands",
+                footerText: "Approved by Cloudy Delivery",
+        
+                listOfSections: [
+                  {
+                    title: "Top Restaurants",
+                    rows: page1.data,
+                  },
+                ],
+              });
+
+
+            });
+
+            previous_page = page;
+            page = page+1;
+
+         }else{
+
+          
+          getPage(page, 3).then(async page1 => {
+
+                
+            page1.data.push({
+            title: "Got to Page "+page,
+            description: "You are in page "+previous_page,
+            id: page
+          });
+
+          previouspage = previous_page-1;
+
+          page1.data.push({
+            title: "Go back",
+            description: "Go back to page "+previouspage,
+            id: previouspage
+          });
+
+    
+
+          await Whatsapp.sendRadioButtons({
+            recipientPhone: from,
+            headerText: "Select the restaurant you want",
+            bodyText: "All restaurants on this app are trusted brands",
+            footerText: "Approved by Cloudy Delivery",
+    
+            listOfSections: [
+              {
+                title: "Top Restaurants",
+                rows: page1.data,
+              },
+            ],
+          });
+
+
+        });
+
+          previous_page = page;
+          page = page+1;
+
+
+         }
+
+          
+        }
+        
+        // else{
+
+
+        //   previouspage = previous_page-1;
+
+        //   getPage(previouspage, 3).then(async page1 => {
+
+           
+        //     page = previous_page;
+
+        //     previous_page = previouspage;
+
+        //     previouspage = previouspage-1;
+   
+        //     page1.data.push({
+        //     title: "Got to Page "+page,
+        //     description: "You are in page "+previous_page,
+        //     id: page
+        //   });
+
+          
+
+        //   if(previouspage!=0){
+
+        //     page1.data.push({
+        //       title: "Go back",
+        //       description: "Go back to page "+previouspage,
+        //       id: previouspage
+        //     });
+
+        //   }
+
+          
+
+        //   await Whatsapp.sendRadioButtons({
+        //     recipientPhone: from,
+        //     headerText: "Select the restaurant you want",
+        //     bodyText: "All restaurants on this app are trusted brands",
+        //     footerText: "Approved by Cloudy Delivery",
+    
+        //     listOfSections: [
+        //       {
+        //         title: "Top Restaurants",
+        //         rows: page1.data,
+        //       },
+        //     ],
+        //   });
+
+
+        //   console.log("page", page);
+
+        //   console.log("page", previous_page);
+
+        //   console.log("page", previouspage);
+
+
+        // });
+   
 
       
 
 
 
+        // }
+
+
+        
+    }else if(!incomingMessage.button_reply){
+
+
+
+      const restaurantData = await fetchRestaurants();
+
+      
+     if(restaurantData.length>9){
+
+
+          page =1 ;
+
+          previous_page = 1;
+            
+          previouspage = 1;
+            
+          maxpage;
+
+        
+
+          getPage(page, 3).then(async page1 => {
+
+
+             page1.data.push({
+              title: "Got to page "+page,
+              description: "You are in page "+previous_page,
+              id: page
+            });
+
+      
+
+            await Whatsapp.sendRadioButtons({
+              recipientPhone: from,
+              headerText: "Select the restaurant you want",
+              bodyText: "All restaurants on this app are trusted brands",
+              footerText: "Approved by Cloudy Delivery",
+      
+              listOfSections: [
+                {
+                  title: "Top Restaurants",
+                  rows: page1.data,
+                },
+              ],
+            });
+
+            maxpage = page1.maxPage
+
+
+          });
+
+          page = page+1;
+
+       
+
+     }
+      
 
     }
 
@@ -389,7 +651,7 @@ export const stageTwo = {
                     }, 
                     {
                         title:'cancel',
-                        id:'cancel',
+                        id:'Cancel',
                     }, 
                 
                 ]
@@ -412,7 +674,7 @@ export const stageTwo = {
 
               await Whatsapp.sendText({
                 message: 'We will welcome you back anytime 😀',
-                recipientPhone: customer,
+                recipientPhone: from,
             }); 
 
               await Whatsapp.sendSimpleButtons({
@@ -448,10 +710,6 @@ export const stageTwo = {
 
         }else if(incomingMessage.button_reply.id=='finsh_order'){
 
-               // storage[from].stage = 3;
-
-
-                 //   const updateData = { from: from, newStage: 7, };
 
         const updateParams = {
           from: from,
@@ -467,22 +725,20 @@ export const stageTwo = {
 
            // storage[from].errands = message;
   
-            await Whatsapp.sendSimpleButtons({
-              message: "Please type out your address or descripion of where we will find you📍",
-              recipientPhone: from,
-              listOfButtons: [
-                  {
-                      title: 'Cancel',
-                      id:'Cancel',
-                  },
+              await Whatsapp.sendSimpleButtons({
+                message: "Please type out your address or descripion of where we will find you📍",
+                recipientPhone: from,
+                listOfButtons: [
+                    {
+                        title: 'Cancel',
+                        id:'Cancel',
+                    },
 
-                
-              ]
-          })
+                  
+                ]
+            })
   
            
-
-  
           })
           .catch((error) => {
             console.error('Error:', error);
@@ -533,7 +789,7 @@ export const stageTwo = {
                       },
                     {
                       title: 'cancel',
-                      id:'cancel',
+                      id:'Cancel',
                   },
                     
                   ]
@@ -549,11 +805,6 @@ export const stageTwo = {
               });
            
  
-
-
-            
-
-
            }
 
         }
@@ -569,6 +820,7 @@ export const stageTwo = {
 
 
 const checkRestaurantExists = async (restaurantName) => {
+
     const restaurants = await fetchRestaurants();
   
     return restaurants.some(restaurant => {

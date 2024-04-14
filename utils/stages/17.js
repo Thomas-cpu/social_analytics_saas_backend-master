@@ -94,11 +94,6 @@ export const stageseventeen = {
                   id:from+'@'+resid+'&rejected',
               },
  
-              // {
-              //   title:'Reject One by One"',
-              //   id:'rejectOne',
-              // }, 
-         
           ]
       })
 

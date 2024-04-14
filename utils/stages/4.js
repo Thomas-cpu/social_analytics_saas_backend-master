@@ -110,10 +110,10 @@ export const stageFour = {
                 title: 'Accept',
                 id: from + '@' + 'accept',
               },
-              //   {
-              //     title: 'Reject',
-              //     id:from+'@'+'rejected',
-              // },
+                {
+                  title: 'Reject',
+                  id:from+'@'+'rejected',
+              },
             ]
           });
         } catch (error) {
@@ -147,6 +147,11 @@ export const stageFour = {
         message: 'Your order has been sent. It will be processed shortly. 😀',
         recipientPhone: from,
         listOfButtons: [
+            
+          {
+            title: "Continue Order",
+            id: "Continue",
+          },
           {
             title: "Cancel Order",
             id: "Cancel",
@@ -162,6 +167,7 @@ export const stageFour = {
   }
 
   if (incomingMessage.button_reply) {
+
     if (incomingMessage.button_reply.id === "Cancel"){
 
         
@@ -170,7 +176,7 @@ export const stageFour = {
         updatedFields: {
           stage: 1,
           order_sent:"No",
-          items:""
+          items:[]
           // Add more fields as needed
         },
       };
@@ -205,6 +211,18 @@ export const stageFour = {
           }
         })
         
+
+    }if(incomingMessage.button_reply.id === "Continue"){
+
+
+      await Whatsapp.sendText({
+  
+        message: `Thank you for your response, We will continue with your order`,
+        recipientPhone: from,
+        
+      }); 
+
+
 
     }
 
