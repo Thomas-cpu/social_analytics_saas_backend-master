@@ -34,11 +34,18 @@ export const stageeightteen = {
 
   async exec({from,incomingMessage,message,Whatsapp,recipientName}) {
 
-  
-        await Whatsapp.sendText({
-          message:incomingMessage.message,
-          recipientPhone: from,
-        });
+
+        if(incomingMessage){
+
+
+          await Whatsapp.sendText({
+            message:incomingMessage.text.body,
+            recipientPhone: from,
+          });
+
+
+
+        }
 
        
   },
