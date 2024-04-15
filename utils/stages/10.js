@@ -103,22 +103,24 @@ export const stageten = {
 
             var address = await getFieldValueFromFirestore(from, "address");
         
-
+            
             await Whatsapp.sendText({
-
-              message: `Your order #${Order}, address: ${address} has been cancelled`,
+  
+              message: `order #${Order}, address: ${address} has been cancelled`,
               recipientPhone: driver,
               
             }); 
-
-
-            // await Whatsapp.sendText({
-
-            //   message: `The order #${Order}, address: ${address} has been cancelled`,
-            //   recipientPhone:,
+  
+  
+            await Whatsapp.sendText({
+  
+              message: `order #${Order}, address: ${address} has been cancelled`,
+              recipientPhone:admin,
               
-            // }); 
-            
+            }); 
+  
+
+          
 
           })
           .catch((error) => {

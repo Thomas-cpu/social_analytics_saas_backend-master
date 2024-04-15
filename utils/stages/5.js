@@ -76,6 +76,31 @@ export const finalStage = {
                     ],
                   });
 
+                  var driver = await getFieldValueFromFirestore(from, "driver");
+
+                  var Order = await getFieldValueFromFirestore(from, "order_no");
+        
+                  var address = await getFieldValueFromFirestore(from, "address");
+
+                  var admin = await getFieldValueFromFirestore(from, "admin");
+
+               
+        
+                  await Whatsapp.sendText({
+        
+                    message: `Order #${Order}, address: ${address} has been cancelled`,
+                    recipientPhone: driver,
+                    
+                  }); 
+        
+        
+                  await Whatsapp.sendText({
+        
+                    message: `Order #${Order}, address: ${address} has been cancelled`,
+                    recipientPhone:admin,
+                    
+                  }); 
+        
 
               } catch (error) {
                 console.error("Error in initialStage.exec:", error);
