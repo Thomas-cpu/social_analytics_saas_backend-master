@@ -69,7 +69,8 @@ export const stagesix = {
           from: from,
           updatedFields: {
             stage: 7,
-            errands:message
+            errands:message,
+            admin:"27716880654",
             // Add more fields as needed
           },
         };

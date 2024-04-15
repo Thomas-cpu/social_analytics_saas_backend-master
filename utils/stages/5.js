@@ -49,6 +49,7 @@ export const finalStage = {
             updatedFields: {
               stage: 1,
               order_sent:"No",
+              admin:"27716880654",
               items:[]
             },
           };

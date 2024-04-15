@@ -13,6 +13,7 @@ export const stageseven = {
           from: from,
           updatedFields: {
             stage: 1,
+            admin:"27716880654",
             itens: [],
             // Add more fields as needed
           },

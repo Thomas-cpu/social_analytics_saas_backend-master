@@ -53,6 +53,28 @@ const fetchRestaurants = async () => {
 };
 
 
+async function getMenu(pageNumber, pageSize, objectArray) {
+  const startIndex = (pageNumber - 1) * pageSize;
+  const totalItems = objectArray.length;
+  const maxPage = Math.ceil(totalItems / pageSize);
+
+  if (pageNumber < 1 || pageNumber > maxPage) {
+    console.log(`Page ${pageNumber} does not exist. Please select a valid page.`);
+    return [];
+  }
+  
+  let endIndex = startIndex + pageSize;
+  if (endIndex > totalItems) {
+    endIndex = totalItems; // Set endIndex to totalItems if it exceeds the total number of items
+  }
+
+  return {
+    data: objectArray.slice(startIndex, endIndex),
+    maxPage: maxPage,
+    totalItems: totalItems // Add totalItems as an attribute
+  };
+}
+
 
 
 async function getPage(pageNumber, pageSize) {
@@ -65,7 +87,7 @@ async function getPage(pageNumber, pageSize) {
     console.log(`Page ${pageNumber} does not exist. Please select a valid page.`);
     return [];
   }
-
+  
   let endIndex = startIndex + pageSize;
   if (endIndex > totalItems) {
     endIndex = totalItems; // Set endIndex to totalItems if it exceeds the total number of items
@@ -171,7 +193,6 @@ export const stageTwo = {
                     ],
                 });
         
-                  
         
                 }else{
         
@@ -239,8 +260,6 @@ export const stageTwo = {
             }
 
 
-
-
            }else{
 
                var pageon = await getFieldValueFromFirestore(from, "pageon")
@@ -300,6 +319,7 @@ export const stageTwo = {
                   });
       
                   previous_page = 1;
+                  previouspage = 1;
                   page = 3;
 
 
@@ -361,11 +381,8 @@ export const stageTwo = {
 
             const updatedItems = items.concat(menuItems.find(item => item.id === incomingMessage.list_reply.id));
 
-          
+           
           if(updatedItems){
-
-           // console.log(updatedItems)
-
 
           const updateParams = {
             from: from,
@@ -507,72 +524,60 @@ export const stageTwo = {
          }
 
           
-        }else{
+        }else if(incomingMessage.list_reply.id==previouspage){
 
-          
-        //   console.log("page", page);
+  
+          previouspage = previous_page-1;
 
-        //   console.log("page", previous_page);
-
-        //   console.log("page", previouspage);
-
-
-        //   previouspage = previous_page-1;
-
-        //   getPage(previouspage, 3).then(async page1 => {
+          getPage(previouspage, 3).then(async page1 => {
 
            
-        //     page = previous_page;
+            page = previous_page;
 
-        //     previous_page = previouspage;
+            previous_page = previouspage;
 
-        //     previouspage = previouspage-1;
+            previouspage = previouspage-1;
    
-        //     page1.data.push({
-        //     title: "Got to Page "+page,
-        //     description: "You are in page "+previous_page,
-        //     id: page
-        //   });
+            page1.data.push({
+            title: "Got to Page "+page,
+            description: "You are in page "+previous_page,
+            id: page
+          });
 
           
 
-        //   if(previouspage!=0){
+          if(previouspage!=0){
 
-        //     page1.data.push({
-        //       title: "Go back",
-        //       description: "Go back to page "+previouspage,
-        //       id: previouspage
-        //     });
+            page1.data.push({
+              title: "Go back",
+              description: "Go back to page "+previouspage,
+              id: previouspage
+            });
 
-        //   }
+          }
 
           
 
-        //   await Whatsapp.sendRadioButtons({
-        //     recipientPhone: from,
-        //     headerText: "Select the restaurant you want",
-        //     bodyText: "All restaurants on this app are trusted brands",
-        //     footerText: "Approved by Cloudy Delivery",
+          await Whatsapp.sendRadioButtons({
+            recipientPhone: from,
+            headerText: "Select the restaurant you want",
+            bodyText: "All restaurants on this app are trusted brands",
+            footerText: "Approved by Cloudy Delivery",
     
-        //     listOfSections: [
-        //       {
-        //         title: "Top Restaurants",
-        //         rows: page1.data,
-        //       },
-        //     ],
-        //   });
+            listOfSections: [
+              {
+                title: "Top Restaurants",
+                rows: page1.data,
+              },
+            ],
+          });
 
 
-
-
-        // });
+        });
    
 
-      
 
-
-
-        }
+    }
 
 
         
@@ -645,8 +650,8 @@ export const stageTwo = {
 
             if(restaurantExists){
 
-
               const menuItems = menu[Thelastrelpy_id];
+
                 const transformedItems = menuItems.map(item => {
                     return {
                       title: item.title,
@@ -654,6 +659,9 @@ export const stageTwo = {
                       id: item.id
                     };
                   });
+
+
+
     
                 await Whatsapp.sendRadioButtons({
                 
@@ -736,6 +744,7 @@ export const stageTwo = {
             updatedFields: {
               stage: 1,
               items: [],
+              admin:"27716880654",
               // Add more fields as needed
             },
           };

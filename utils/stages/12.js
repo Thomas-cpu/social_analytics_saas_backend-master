@@ -77,6 +77,7 @@ export const stageetwelve = {
             from: from,
             updatedFields: {
               stage: 1,
+              admin:"27716880654",
               itens: [],
               driver:" "
               // Add more fields as needed

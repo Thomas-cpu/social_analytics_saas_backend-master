@@ -67,35 +67,38 @@ export const stageseventeen = {
     const order_summery =  `🗒️ *New Order #${order} Alert*: \n\nItems Ordered\n *${desserts}* \n\n💰 Total amount:R *${
      totalPrice
    },00*.\n⏳ Delivery time: *50 minutes*. \n` 
-    
-      items.forEach(async tShirt => {
 
-          if(getObjectNumberByName(findItemById(tShirt.id))){
+   
+    
+
+    //   items.forEach(async tShirt => {
+
+    //       if(getObjectNumberByName(findItemById(tShirt.id))){
             
-            number = getObjectNumberByName(findItemById(tShirt.id))
+    //         number = getObjectNumberByName(findItemById(tShirt.id))
 
-            resid =tShirt.id
-          }
+    //         resid =tShirt.id
+    //       }
     
     
-      });
+    //   });
 
 
-    await Whatsapp.sendSimpleButtons({
-          message: order_summery,
-          recipientPhone: number,
-          listOfButtons: [
-              {
-                  title: 'Accept ',
-                  id:from+'@'+resid+'&accept'
-              },
-              {
-                  title:'Reject',
-                  id:from+'@'+resid+'&rejected',
-              },
+    // await Whatsapp.sendSimpleButtons({
+    //       message: order_summery,
+    //       recipientPhone: number,
+    //       listOfButtons: [
+    //           {
+    //               title: 'Accept ',
+    //               id:from+'@'+resid+'&accept'
+    //           },
+    //           {
+    //               title:'Reject',
+    //               id:from+'@'+resid+'&rejected',
+    //           },
  
-          ]
-      })
+    //       ]
+    //   })
 
 
   },

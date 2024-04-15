@@ -59,6 +59,7 @@ export const stageten = {
           updatedFields: {
             stage: 1,
             itens: [],
+            admin:"27716880654",
             driver:" "
             // Add more fields as needed
           },
@@ -111,12 +112,12 @@ export const stageten = {
             }); 
 
 
-            await Whatsapp.sendText({
+            // await Whatsapp.sendText({
 
-              message: `The order #${Order}, address: ${address} has been cancelled`,
-              recipientPhone:2716880654,
+            //   message: `The order #${Order}, address: ${address} has been cancelled`,
+            //   recipientPhone:,
               
-            }); 
+            // }); 
             
 
           })

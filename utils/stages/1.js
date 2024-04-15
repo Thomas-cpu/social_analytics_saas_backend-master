@@ -273,7 +273,8 @@ export const stageOne = {
         from: from,
         updatedFields: {
           stage: 1,
-          order_sent:"No"
+          order_sent:"No",
+          admin:"27716880654",
           // Add more fields as needed
         },
       };

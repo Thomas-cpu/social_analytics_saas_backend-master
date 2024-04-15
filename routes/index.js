@@ -601,14 +601,31 @@ router.post("/callback", async (req, res) => {
                     "items"
                   );
 
+                  var Order_No = await getFieldValueFromFirestore(
+                    incomingMessage.button_reply.id.split("@")[0],
+                    "items"
+                  );
+
+                  var driver = await getFieldValueFromFirestore(
+                    incomingMessage.button_reply.id.split("@")[0],
+                    "driver"
+                  );
+
                   updateStatusById(items, result, "rejected");
 
                   await Whatsapp.sendText({
                     message:
-                      "Hi Your order Has been rejected",
+                      "Hi Your"+Order_No+" order Has been rejected",
                     recipientPhone: incomingMessage.button_reply.id.split(
                       "@"
                     )[0],
+                  });
+
+
+                  await Whatsapp.sendText({
+                    message:
+                      "Hi "+Order_No+" order Has been reject/canceled",
+                    recipientPhone: driver,
                   });
 
 
@@ -660,7 +677,7 @@ router.post("/callback", async (req, res) => {
                         message: message,
                         Whatsapp: Whatsapp,
                         recipientName: recipientName,
-                        incomingMessage: incomingMessage,
+                        incomingMessage: incomingMessage,Y
                       });
                     })
                     .catch((error) => {
