@@ -663,14 +663,14 @@ router.post("/callback", async (req, res) => {
 
                   await Whatsapp.sendText({
                     message:
-                      "Hi #"+Order_No+" order Has been reject/canceled",
+                      "Hi #"+Order_No+" order has been reject/canceled",
                     recipientPhone: driver,
                   });
 
 
                    await Whatsapp.sendText({
                     message:
-                      "Hi "+Order_No+" order Has been reject/canceled",
+                      "Hi #"+Order_No+" order Has been reject/canceled",
                     recipientPhone: admin,
                   });
 

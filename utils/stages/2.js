@@ -164,8 +164,11 @@ export const stageTwo = {
                 const menuItems = menu[incomingMessage.list_reply.id];
         
                 Thelastrelpy_id=incomingMessage.list_reply.id;
-        
+
+
                 if(menuItems){
+
+
         
                   const transformedItems = menuItems.map(item => {
                     return {
@@ -175,23 +178,29 @@ export const stageTwo = {
                     };
         
                   });
-        
-        
-                  await Whatsapp.sendRadioButtons({
+
+
+                  getMenu(1, 9,transformedItems).then(async page1 => {
+
+                  
+                    await Whatsapp.sendRadioButtons({
                     
-                    recipientPhone: from,
-                    headerText: incomingMessage.list_reply.id+' Food Menu',
-                    bodyText:
-                        'Pick one product at a time',
-                    footerText: 'Approved by Cloudy deliveries',
-                    listOfSections: [
-                        {
-                            title: 'Food Menu',
-                            rows: transformedItems,
-                        },
-        
-                    ],
-                });
+                      recipientPhone: from,
+                      headerText: incomingMessage.list_reply.id+' Food Menu',
+                      bodyText:
+                          'Pick one product at a time',
+                      footerText: 'Approved by Cloudy deliveries',
+                      listOfSections: [
+                          {
+                              title: 'Food Menu',
+                              rows: page1.data,
+                          },
+          
+                      ],
+                  });
+                    console.log(page1.data)
+  
+                  });
         
         
                 }else{
@@ -332,10 +341,6 @@ export const stageTwo = {
 
 
            }
-
-
-
-
 
 
         }else{
@@ -652,6 +657,8 @@ export const stageTwo = {
 
               const menuItems = menu[Thelastrelpy_id];
 
+
+
                 const transformedItems = menuItems.map(item => {
                     return {
                       title: item.title,
@@ -661,25 +668,29 @@ export const stageTwo = {
                   });
 
 
+                  getMenu(1, 9,transformedItems).then(async page1 => {
 
-    
-                await Whatsapp.sendRadioButtons({
+                  
+                    await Whatsapp.sendRadioButtons({
+                    
+                      recipientPhone: from,
+                      headerText: incomingMessage.list_reply.id+' Food Menu',
+                      bodyText:
+                          'Pick one product at a time',
+                      footerText: 'Approved by Cloudy deliveries',
+                      listOfSections: [
+                          {
+                              title: 'Food Menu',
+                              rows: page1.data,
+                          },
+          
+                      ],
+                  });
+                    console.log(page1.data)
+  
+                  });
+
                 
-                    recipientPhone: from,
-                    headerText: Thelastrelpy_id+' Food Menu',
-                    bodyText:
-                        'Pick one product at a time',
-                    footerText: 'Approved by Cloudy deliveries',
-                    listOfSections: [
-                        {
-                            title: 'Break Fast',
-                            rows: transformedItems,
-                        },
-        
-                    ],
-                });
-
-
             }
 
          
