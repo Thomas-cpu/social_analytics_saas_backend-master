@@ -215,7 +215,7 @@ export const stageFour = {
                     listOfButtons: [
                       {
                         title: 'Accept',
-                        id: from + '@' + 'accept',
+                        id: from+'@'+'accept',
                       },
                         {
                           title: 'Reject',
@@ -224,13 +224,10 @@ export const stageFour = {
                     ]
                   });
                 } catch (error) {
-                  // Handle any errors that occur during sending the buttons
                   console.error("Error sending buttons to recipient:", value, error);
                 }
               });
               
-
-
 
               try {
 

@@ -118,7 +118,8 @@ export const stageOne = {
           from: from,
           updatedFields: {
             stage: 2,
-            pageon: 1
+            pageon: 1,
+            items:[]
             // Add more fields as needed
           },
         };

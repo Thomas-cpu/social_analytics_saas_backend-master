@@ -68,37 +68,25 @@ export const stageseventeen = {
      totalPrice
    },00*.\n⏳ Delivery time: *50 minutes*. \n` 
 
-   
+
+    number = getObjectNumberByName("Deborah Gunners")
     
-
-    //   items.forEach(async tShirt => {
-
-    //       if(getObjectNumberByName(findItemById(tShirt.id))){
-            
-    //         number = getObjectNumberByName(findItemById(tShirt.id))
-
-    //         resid =tShirt.id
-    //       }
-    
-    
-    //   });
-
-
-    // await Whatsapp.sendSimpleButtons({
-    //       message: order_summery,
-    //       recipientPhone: number,
-    //       listOfButtons: [
-    //           {
-    //               title: 'Accept ',
-    //               id:from+'@'+resid+'&accept'
-    //           },
-    //           {
-    //               title:'Reject',
-    //               id:from+'@'+resid+'&rejected',
-    //           },
+  
+    await Whatsapp.sendSimpleButtons({
+          message: order_summery,
+          recipientPhone: number,
+          listOfButtons: [
+              {
+                  title: 'Accept ',
+                  id:from+'@'+resid+'&accept'
+              },
+              {
+                  title:'Reject',
+                  id:from+'@'+resid+'&rejected',
+              },
  
-    //       ]
-    //   })
+          ]
+      })
 
 
   },

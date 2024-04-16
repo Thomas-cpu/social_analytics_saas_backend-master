@@ -77,7 +77,7 @@ let number;
 
 let Whatsapp = new WhatsappCloudAPI({
   accessToken:
-    "EAAMdhVfHQAsBOyBUa2Tz3efCVDYKfrx2cTpDbrpkERIgTZAJtlsBXDF75gaLiPNK1Yt2bTDTllNh0tZBVwHQE7tONuKrPpHEOhl1iZBGsgT5moorxextzEfQOujZAdrPLiTuiZBMczy0dcOvSRZCc2jsGnCyY7ngWAzTWL4xKLGNzzltCLluABy70RYZBooh3J8ssE8ZAY4QvRiLUXAKw0AZD",
+    "EAAMdhVfHQAsBO7K3ZAvZA5JO0D0zDRz9l12Ez2rNpBZC2dv6sXIjFT707eu0x0G6oPkGhr1ZA2yHhOoLLuUounxUcXk2KWs4En6slSIoeSPr5abE7sgN4WA7DLp3H7k7jUgN4VFk1aFgurl7MZCSZBkt8jZC8sJaYAeRJRbHG93vKuJo67KqY0zyWbqTvWEJxG2ZA9kytNUZC1MSCnH7QuY8ZD",
   senderPhoneNumberId: "166159806581123",
   WABA_ID: "145025998701740",
 });
@@ -168,6 +168,7 @@ router.post("/callback", async (req, res) => {
           });
       } else {
         if (incomingMessage.button_reply) {
+
           doesDocumentExist(incomingMessage.button_reply.id.slice(0, 11))
             .then(async (exists) => {
               if (exists && !restaurants[recipientPhone]) {
@@ -177,6 +178,7 @@ router.post("/callback", async (req, res) => {
 
                 getStage(fromData)
                   .then(async (currentStage) => {
+
                     console.log("Current Stage:", currentStage);
 
                     // Check if the currentStage is 9 or 5
@@ -239,11 +241,9 @@ router.post("/callback", async (req, res) => {
                           }
 
 
-                          //console.log(incomingMessage.from.phone);
 
                           console.log("sending order to the driver");
 
-                          console.log( )
     
                           const updateParams = {
                             from: incomingMessage.button_reply.id.slice(0, 11),
@@ -382,15 +382,33 @@ router.post("/callback", async (req, res) => {
 
                 number = incomingMessage.button_reply.id.slice(0, 11);
 
+               
+
                 var driver = await getFieldValueFromFirestore(number, "driver");
 
-                if (driver.trim() === "") {
+                console.log("The driver is:" ,driver)
+
+
+                if (driver.trim() !== "") {
 
                   const fromData = { from: number };
 
+                
                   getStage(fromData)
-                    .then((currentStage) => {
+                    .then(async (currentStage) => {
+
+
                       if (currentStage == 4) {
+
+                        await Whatsapp.sendText({
+                          message: 'Now wait for the order to be finished by resturant you will be notified when to fetch it',
+                          recipientPhone: recipientPhone,
+
+                         }); 
+                        
+
+                         
+
                         const updateParams = {
                           from: number,
                           updatedFields: {
@@ -400,6 +418,7 @@ router.post("/callback", async (req, res) => {
 
                         updateStageInFirestore(updateParams)
                           .then(async () => {
+                            
                             const messageResponse = stages[17].stage.exec({
                               from: number,
                               message: message,
@@ -407,11 +426,14 @@ router.post("/callback", async (req, res) => {
                               recipientName: recipientName,
                               incomingMessage: incomingMessage,
                             });
+
                           })
+                          
                           .catch((error) => {
                             console.error("Error:", error);
                           });
                       }
+
                     })
                     .catch((error) => {
                       console.error("Error:", error);
@@ -732,7 +754,7 @@ router.post("/callback", async (req, res) => {
                         message: message,
                         Whatsapp: Whatsapp,
                         recipientName: recipientName,
-                        incomingMessage: incomingMessage,Y
+                        incomingMessage: incomingMessage,
                       });
                     })
                     .catch((error) => {

@@ -10,7 +10,8 @@ export const initialStage = {
         updatedFields: {
           stage: 1,
           admin:"27716880654",
-          order_sent:"No"
+          order_sent:"No",
+          items:[]
         },
       };
 
