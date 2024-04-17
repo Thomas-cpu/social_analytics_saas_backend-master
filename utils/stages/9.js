@@ -77,11 +77,21 @@ export const stagenine = {
 
     }else if(incomingMessage.button_reply.id ==="cancel"){
 
-          var errands = await getFieldValueFromFirestore(from, "errands");
+      var errands = await getFieldValueFromFirestore(from, "errands");
 
-          var address = await getFieldValueFromFirestore(from, "address");
+      var address = await getFieldValueFromFirestore(from, "address");
 
-          
+      var driver = await getFieldValueFromFirestore(from, "driver");
+
+      if(driver){
+
+        console.log("yes we are in 9")
+
+
+      }
+
+
+        
         const updateParams = {
           from: from,
           updatedFields: {

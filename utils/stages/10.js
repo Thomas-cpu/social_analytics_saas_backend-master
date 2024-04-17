@@ -54,13 +54,23 @@ export const stageten = {
 
       }else if(incomingMessage.button_reply.id==="cancel"){
 
+        var driver = await getFieldValueFromFirestore(from, "driver");
+        
+
+        if(driver){
+
+          console.log("yes we are in 10");
+  
+        }
+  
+
         const updateParams = {
           from: from,
           updatedFields: {
             stage: 1,
             itens: [],
             admin:"27716880654",
-            driver:" ",
+            driver:"",
             errands:"",
             // Add more fields as needed
           },

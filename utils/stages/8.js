@@ -119,7 +119,7 @@ export const stageeight= {
               stage: 1,
               itens: [],
               admin:"27716880654",
-              driver:" ",
+              driver:"",
               errands:"",
               // Add more fields as needed
             },
