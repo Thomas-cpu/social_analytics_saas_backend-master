@@ -59,6 +59,9 @@ export const stageten = {
         var Order = await getFieldValueFromFirestore(from, "order_no");
 
         var address = await getFieldValueFromFirestore(from, "address");
+
+        var admin = await getFieldValueFromFirestore(from, "admin");
+
   
 
         const updateParams = {
