@@ -77,18 +77,12 @@ export const stagenine = {
 
     }else if(incomingMessage.button_reply.id ==="cancel"){
 
-      var errands = await getFieldValueFromFirestore(from, "errands");
-
-      var address = await getFieldValueFromFirestore(from, "address");
 
       var driver = await getFieldValueFromFirestore(from, "driver");
 
-      if(driver){
+      var Order = await getFieldValueFromFirestore(from, "order_no");
 
-        console.log("yes we are in 9")
-
-
-      }
+      var address = await getFieldValueFromFirestore(from, "address");
 
 
         
@@ -98,6 +92,7 @@ export const stagenine = {
             stage: 1,
             admin:"27716880654",
             driver:"",
+            order_no :"",
             errands:"",
          
           },
@@ -134,11 +129,7 @@ export const stagenine = {
             ],
           });
 
-          var driver = await getFieldValueFromFirestore(from, "driver");
-
-          var Order = await getFieldValueFromFirestore(from, "order_no");
-
-          var address = await getFieldValueFromFirestore(from, "address");
+         
        
 
           await Whatsapp.sendText({
@@ -152,7 +143,7 @@ export const stagenine = {
           await Whatsapp.sendText({
 
             message: `The order #${Order}, address: ${address} has been cancelled`,
-            recipientPhone:2716880654,
+            recipientPhone:27716880654,
             
           }); 
 

@@ -21,6 +21,7 @@ export const stagesix = {
               updatedFields: {
                 stage: 1,
                 errands:"",
+                order_no :"",
                 // Add more fields as needed
               },
             };

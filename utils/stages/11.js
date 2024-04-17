@@ -64,6 +64,17 @@ export const stageeleven = {
         
       }else if(incomingMessage.button_reply.id==="cancel"){
 
+
+
+                    
+        var driver = await getFieldValueFromFirestore(from, "driver");
+
+        var Order = await getFieldValueFromFirestore(from, "order_no");
+
+        var address = await getFieldValueFromFirestore(from, "address");
+
+        var admin = await getFieldValueFromFirestore(from, "admin");
+
         const updateParams = {
           from: from,
           updatedFields: {
@@ -71,7 +82,8 @@ export const stageeleven = {
             itens: [],
             errands:"",
             admin:"27716880654",
-            driver:" "
+            driver:"",
+            order_no :"",
             // Add more fields as needed
           },
         };
@@ -105,14 +117,7 @@ export const stageeleven = {
               ],
             });
             
-            
-            var driver = await getFieldValueFromFirestore(from, "driver");
 
-            var Order = await getFieldValueFromFirestore(from, "order_no");
-  
-            var address = await getFieldValueFromFirestore(from, "address");
-
-            var admin = await getFieldValueFromFirestore(from, "admin");
 
          
   

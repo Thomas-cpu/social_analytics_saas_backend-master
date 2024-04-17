@@ -67,6 +67,16 @@ export const stagethirtteen = {
         
         }else if(incomingMessage.button_reply.id==="cancel"){
 
+
+          var driver = await getFieldValueFromFirestore(from, "driver");
+
+          var Order = await getFieldValueFromFirestore(from, "order_no");
+
+          var address = await getFieldValueFromFirestore(from, "address");
+
+          var admin = await getFieldValueFromFirestore(from, "admin");
+
+
           const updateParams = {
             from: from,
             updatedFields: {
@@ -75,6 +85,7 @@ export const stagethirtteen = {
               admin:"27716880654",
               driver:"",
               errands:"",
+              order_no :""
               // Add more fields as needed
             },
           };
@@ -109,14 +120,7 @@ export const stagethirtteen = {
               });
               
             
-              var driver = await getFieldValueFromFirestore(from, "driver");
-
-              var Order = await getFieldValueFromFirestore(from, "order_no");
-    
-              var address = await getFieldValueFromFirestore(from, "address");
-
-              var admin = await getFieldValueFromFirestore(from, "admin");
-
+           
            
     
               await Whatsapp.sendText({

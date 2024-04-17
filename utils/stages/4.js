@@ -58,6 +58,7 @@ export const stageFour = {
           stage: 1,
           errands:"",
           order_sent:"No",
+          order_no :"",
           admin:"27716880654",
           items:[]
           // Add more fields as needed

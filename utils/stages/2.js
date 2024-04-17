@@ -781,6 +781,7 @@ export const stageTwo = {
             updatedFields: {
               stage: 1,
               items: [],
+              order_no :"",
               errands:"",
               admin:"27716880654",
               // Add more fields as needed

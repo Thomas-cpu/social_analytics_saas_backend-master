@@ -335,32 +335,34 @@ router.post("/callback", async (req, res) => {
                                   order_no: randomOrderNumber,
                                 },
                               };
+
+                              
+                            updateStageInFirestore(updatesomestuff)
+                            .then(async () => {
+
+                              await Whatsapp.sendText({
+                                message:
+                                  "Your orderNo#" +
+                                  randomOrderNumber +
+                                  " 🚗 Your driver is " +
+                                  drivername +
+                                  " and he is on his way to you!",
+                                recipientPhone: incomingMessage.button_reply.id.slice(
+                                  0,
+                                  11
+                                ),
+                              });
+
+                            })
+    
+                            .catch((error) => {
+                              console.error("Error:", error);
+                            });
                         
 
                           }
                       
   
-                            updateStageInFirestore(updatesomestuff)
-                              .then(async () => {
-
-                                await Whatsapp.sendText({
-                                  message:
-                                    "Your orderNo#" +
-                                    randomOrderNumber +
-                                    " 🚗 Your driver is " +
-                                    drivername +
-                                    " and he is on his way to you!",
-                                  recipientPhone: incomingMessage.button_reply.id.slice(
-                                    0,
-                                    11
-                                  ),
-                                });
-
-                              })
-      
-                              .catch((error) => {
-                                console.error("Error:", error);
-                              });
                              
                         }else{
 
@@ -704,8 +706,9 @@ router.post("/callback", async (req, res) => {
                     "@"
                   )[0],
                   updatedFields: {
-                    stage: 1,
+                   stage: 1,
                    order_sent:"No",
+                   order_no :"",
                    items:[],
                    admin:"27716880654",
 

@@ -154,6 +154,7 @@ export const stageOne = {
                 from: from,
                 updatedFields: {
                   stage: 1,
+                  order_no :"",
                 },
               };
 
@@ -274,6 +275,7 @@ export const stageOne = {
         from: from,
         updatedFields: {
           stage: 1,
+          order_no :"",
           order_sent:"No",
           errands:"",
           admin:"27716880654",
