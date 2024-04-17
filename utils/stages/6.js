@@ -20,6 +20,7 @@ export const stagesix = {
               from: from,
               updatedFields: {
                 stage: 1,
+                errands:"",
                 // Add more fields as needed
               },
             };

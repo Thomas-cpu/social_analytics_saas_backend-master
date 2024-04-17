@@ -77,7 +77,7 @@ let number;
 
 let Whatsapp = new WhatsappCloudAPI({
   accessToken:
-    "EAAMdhVfHQAsBO7K3ZAvZA5JO0D0zDRz9l12Ez2rNpBZC2dv6sXIjFT707eu0x0G6oPkGhr1ZA2yHhOoLLuUounxUcXk2KWs4En6slSIoeSPr5abE7sgN4WA7DLp3H7k7jUgN4VFk1aFgurl7MZCSZBkt8jZC8sJaYAeRJRbHG93vKuJo67KqY0zyWbqTvWEJxG2ZA9kytNUZC1MSCnH7QuY8ZD",
+    "EAAMdhVfHQAsBO36FMZAm8ZBLWljFAjxn1pKCXEGZAYIwZBtFNauhN2nzv0JjQPKWNkd693gzGDQiMKs25ZCVakE4rHZAfb7zaJ3KKX1QBF84rBed3W0VesZAy7CYfkv4LK6RBwamMYZCRGRBT7tU2ZADq4hMyZAySpDN4kgTap5nagQwVdy3Gt62aUQgveK3g9Gws3FXa4lauXtmy6fIRamPQZD",
   senderPhoneNumberId: "166159806581123",
   WABA_ID: "145025998701740",
 });
@@ -386,14 +386,15 @@ router.post("/callback", async (req, res) => {
 
                 var driver = await getFieldValueFromFirestore(number, "driver");
 
-                console.log("The driver is:" ,driver)
+                
 
 
-                if (driver.trim() !== "") {
+                if (driver.trim() !== "" || driver.trim()==="") {
 
                   const fromData = { from: number };
 
-                
+                  console.log("The driver is:" ,driver)
+
                   getStage(fromData)
                     .then(async (currentStage) => {
 

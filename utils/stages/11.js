@@ -69,6 +69,7 @@ export const stageeleven = {
           updatedFields: {
             stage: 1,
             itens: [],
+            errands:"",
             admin:"27716880654",
             driver:" "
             // Add more fields as needed

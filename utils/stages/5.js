@@ -48,6 +48,7 @@ export const finalStage = {
             from: from,
             updatedFields: {
               stage: 1,
+              errands:"",
               order_sent:"No",
               admin:"27716880654",
               items:[]

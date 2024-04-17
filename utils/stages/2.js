@@ -206,7 +206,7 @@ export const stageTwo = {
                       headerText: 'Food Menu',
                       bodyText:
                           'Pick one product at a time',
-                      footerText: 'Approved by Cloudy deliveries',
+                      footerText: 'Approved by Cloudy Deliveries',
                       listOfSections: [
                           {
                               title: 'Food Menu',
@@ -252,25 +252,25 @@ export const stageTwo = {
 
                                 
                             page1.data.push({
-                            title: "Got to Page "+page,
-                            description: "You are in page "+previous_page,
+                            title: "More Restaurants",
+                            description: "More Restaurants",
                             id: page
                           });
 
                           previouspage = previous_page-1;
 
-                          page1.data.push({
-                            title: "Go back",
-                            description: "Go back to page "+previouspage,
-                            id: previouspage
-                          });
+                          // page1.data.push({
+                          //   title: "Go back",
+                          //   description: "Go back to page "+previouspage,
+                          //   id: previouspage
+                          // });
 
 
                           await Whatsapp.sendRadioButtons({
                             recipientPhone: from,
                             headerText: "Select the restaurant you want",
                             bodyText: "All restaurants on this app are trusted brands",
-                            footerText: "Approved by Cloudy Delivery",
+                            footerText: "Approved by Cloudy Deliveries",
                     
                             listOfSections: [
                               {
@@ -320,18 +320,18 @@ export const stageTwo = {
 
                   
                       page1.data.push({
-                      title: "Go to page 3",
-                      description: "You are in page 2",
+                      title: "More Restaurants",
+                      description: "More Restaurants",
                       id: 3
                     });
       
                     previouspage = previous_page-1;
       
-                    page1.data.push({
-                      title: "Go back",
-                      description: "Go back to page 1",
-                      id: 1
-                    });
+                    // page1.data.push({
+                    //   title: "Go back",
+                    //   description: "Go back to page 1",
+                    //   id: 1
+                    // });
       
                     console.log(page1.data)
               
@@ -340,7 +340,7 @@ export const stageTwo = {
                       recipientPhone: from,
                       headerText: "Select the restaurant you want",
                       bodyText: "All restaurants on this app are trusted brands",
-                      footerText: "Approved by Cloudy Delivery",
+                      footerText: "Approved by Cloudy Deliveries",
               
                       listOfSections: [
                         {
@@ -498,7 +498,7 @@ export const stageTwo = {
                 recipientPhone: from,
                 headerText: "Select the restaurant you want",
                 bodyText: "All restaurants on this app are trusted brands",
-                footerText: "Approved by Cloudy Delivery",
+                footerText: "Approved by Cloudy Deliveries",
         
                 listOfSections: [
                   {
@@ -523,25 +523,25 @@ export const stageTwo = {
 
                 
             page1.data.push({
-            title: "Got to Page "+page,
-            description: "You are in page "+previous_page,
+            title: "More Restaurants",
+            description: "More Restaurants",
             id: page
           });
 
           previouspage = previous_page-1;
 
-          page1.data.push({
-            title: "Go back",
-            description: "Go back to page "+previouspage,
-            id: previouspage
-          });
+          // page1.data.push({
+          //   title: "Go back",
+          //   description: "Go back to page "+previouspage,
+          //   id: previouspage
+          // });
 
 
           await Whatsapp.sendRadioButtons({
             recipientPhone: from,
             headerText: "Select the restaurant you want",
             bodyText: "All restaurants on this app are trusted brands",
-            footerText: "Approved by Cloudy Delivery",
+            footerText: "Approved by Cloudy Deliveries",
     
             listOfSections: [
               {
@@ -578,8 +578,8 @@ export const stageTwo = {
    
             page1.data.push({
 
-            title: "Got to Page "+page,
-            description: "You are in page "+previous_page,
+            title: "More Restaurants",
+            description: "More Restaurants",
             id: page
 
           });
@@ -589,11 +589,11 @@ export const stageTwo = {
           if(previouspage!=0){
 
 
-            page1.data.push({
-              title: "Go back",
-              description: "Go back to page "+previouspage,
-              id: previouspage
-            });
+            // page1.data.push({
+            //   title: "Go back",
+            //   description: "Go back to page "+previouspage,
+            //   id: previouspage
+            // });
 
           }
 
@@ -603,7 +603,7 @@ export const stageTwo = {
             recipientPhone: from,
             headerText: "Select the restaurant you want",
             bodyText: "All restaurants on this app are trusted brands",
-            footerText: "Approved by Cloudy Delivery",
+            footerText: "Approved by Cloudy Deliveries",
     
             listOfSections: [
               {
@@ -628,56 +628,43 @@ export const stageTwo = {
 
       const restaurantData = await fetchRestaurants();
 
-      
-     if(restaurantData.length>9){
 
 
-          page =1 ;
+      const updateParams = {
+        from: from,
+        updatedFields: {
+          rating: 1,
+        },
+      };
+  
+      updateStageInFirestore(updateParams)
+        .then(async () => {
 
-          previous_page = 1;
-            
-          previouspage = 1;
-            
-          maxpage;
+         // const fieldName = "errands";
 
-        
-
-          getPage(page, 3).then(async page1 => {
-
-
-             page1.data.push({
-              title: "Got to page "+page,
-              description: "You are in page "+previous_page,
-              id: page
-            });
-
-      
-
-            await Whatsapp.sendRadioButtons({
-              recipientPhone: from,
-              headerText: "Select the restaurant you want",
-              bodyText: "All restaurants on this app are trusted brands",
-              footerText: "Approved by Cloudy Delivery",
-      
-              listOfSections: [
-                {
-                  title: "Top Restaurants",
-                  rows: page1.data,
-                },
-              ],
-            });
-
-            maxpage = page1.maxPage
-
-
+  
+            await Whatsapp.sendSimpleButtons({
+            message:
+              "Do you want to ?",
+            recipientPhone: from,
+            listOfButtons: [
+              {
+                title: "Continue Order",
+                id: "Continue",
+              },
+              {
+                title: "Cancel",
+                id: "Cancel",
+              },
+            ],
           });
+  
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+  
 
-          page = page+1;
-
-       
-
-     }
-      
 
     }
 
@@ -716,7 +703,7 @@ export const stageTwo = {
                       headerText: 'Food Menu',
                       bodyText:
                           'Pick one product at a time',
-                      footerText: 'Approved by Cloudy deliveries',
+                      footerText: 'Approved by Cloudy Deliveries',
                       listOfSections: [
                           {
                               title: 'Food Menu',
@@ -794,6 +781,7 @@ export const stageTwo = {
             updatedFields: {
               stage: 1,
               items: [],
+              errands:"",
               admin:"27716880654",
               // Add more fields as needed
             },
@@ -940,6 +928,64 @@ export const stageTwo = {
            
  
            }
+
+        }else if(incomingMessage.button_reply.id=='Continue'){
+
+          const restaurantData = await fetchRestaurants();
+
+                      
+           if(restaurantData.length>9){
+
+
+                page =1 ;
+
+                previous_page = 1;
+                  
+                previouspage = 1;
+                  
+                maxpage;
+
+              
+
+                getPage(page, 3).then(async page1 => {
+
+
+                   page1.data.push({
+                    title: "More Restaurants",
+                    description: "More Restaurants",
+                    id: page
+                  });
+
+            
+
+                  await Whatsapp.sendRadioButtons({
+                    recipientPhone: from,
+                    headerText: "Select the restaurant you want",
+                    bodyText: "All restaurants on this app are trusted brands",
+                    footerText: "Approved by Cloudy Deliveries",
+            
+                    listOfSections: [
+                      {
+                        title: "Top Restaurants",
+                        rows: page1.data,
+                      },
+                    ],
+                  });
+
+                  maxpage = page1.maxPage
+
+
+                });
+
+                page = page+1;
+
+            
+
+           }
+      
+
+
+
 
         }
  

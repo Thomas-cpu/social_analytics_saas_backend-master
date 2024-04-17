@@ -194,8 +194,8 @@ export const stageOne = {
         
         
                      page1.data.push({
-                      title: "Got to page "+page,
-                      description: "You are in page "+previous_page,
+                      title: "More Restaurants",
+                      description: "More Restaurants",
                       id: page
                     });
         
@@ -205,7 +205,7 @@ export const stageOne = {
                       recipientPhone: from,
                       headerText: "Select the restaurant you want",
                       bodyText: "All restaurants on this app are trusted brands",
-                      footerText: "Approved by Cloudy Delivery",
+                      footerText: "Approved by Cloudy Deliveries",
               
                       listOfSections: [
                         {
@@ -275,6 +275,7 @@ export const stageOne = {
         updatedFields: {
           stage: 1,
           order_sent:"No",
+          errands:"",
           admin:"27716880654",
           // Add more fields as needed
         },

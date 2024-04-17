@@ -87,7 +87,8 @@ export const stagenine = {
           updatedFields: {
             stage: 1,
             admin:"27716880654",
-            driver:""
+            driver:"",
+            errands:"",
          
           },
         };
@@ -163,8 +164,9 @@ export const stagenine = {
     }
 
 
-
    }else{
+
+    /////////
 
     const updateParams = {
       from: from,
@@ -198,6 +200,9 @@ export const stagenine = {
       .catch((error) => {
         console.error("Error:", error);
       });
+
+
+      ////////////////
 
 
    }

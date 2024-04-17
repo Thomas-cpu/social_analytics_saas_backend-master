@@ -55,6 +55,7 @@ export const stageseventeen = {
 
    var order  = await getFieldValueFromFirestore(from, "order_no");
 
+   var resturant_name  = await getFieldValueFromFirestore(from, "Restaurant");
 
     const totalPrice = items.reduce((total, item) => {
                  // Extract the numeric part of the price and convert it to a number
@@ -69,7 +70,7 @@ export const stageseventeen = {
    },00*.\n⏳ Delivery time: *50 minutes*. \n` 
 
 
-    number = getObjectNumberByName("Deborah Gunners")
+    number = getObjectNumberByName(resturant_name)
     
   
     await Whatsapp.sendSimpleButtons({

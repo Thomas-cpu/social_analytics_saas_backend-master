@@ -60,7 +60,8 @@ export const stageten = {
             stage: 1,
             itens: [],
             admin:"27716880654",
-            driver:" "
+            driver:" ",
+            errands:"",
             // Add more fields as needed
           },
         };
@@ -103,7 +104,7 @@ export const stageten = {
 
             var address = await getFieldValueFromFirestore(from, "address");
         
-            
+
             await Whatsapp.sendText({
   
               message: `order #${Order}, address: ${address} has been cancelled`,

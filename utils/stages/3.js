@@ -99,6 +99,7 @@ export const stageThree = {
           from: from,
           updatedFields: {
             stage: 1,
+            errands:"",
             admin:"27716880654",
             items: [],
             // Add more fields as needed

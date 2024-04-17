@@ -15,6 +15,7 @@ export const stageseven = {
             stage: 1,
             admin:"27716880654",
             itens: [],
+            errands:"",
             // Add more fields as needed
           },
         };
