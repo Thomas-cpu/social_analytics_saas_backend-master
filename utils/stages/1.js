@@ -4,14 +4,18 @@ import { updateStageInFirestore } from "../stages.js";
 const restaurantsCollection = db.collection("restaurant");
 
 async function getPage(pageNumber, pageSize) {
+
   const startIndex = (pageNumber - 1) * pageSize;
   const restaurantData = await fetchRestaurants();
   const totalItems = restaurantData.length;
   const maxPage = Math.ceil(totalItems / pageSize);
 
   if (pageNumber < 1 || pageNumber > maxPage) {
+
     console.log(`Page ${pageNumber} does not exist. Please select a valid page.`);
+
     return [];
+
   }
 
   let endIndex = startIndex + pageSize;
@@ -20,9 +24,12 @@ async function getPage(pageNumber, pageSize) {
   }
 
   return {
+
     data: restaurantData.slice(startIndex, endIndex),
     maxPage: maxPage
+    
   };
+
 }
 
 var page =1 ;
