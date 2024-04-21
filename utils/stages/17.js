@@ -55,6 +55,7 @@ export const stageseventeen = {
 
    var order  = await getFieldValueFromFirestore(from, "order_no");
 
+   var resturant_name  = await getFieldValueFromFirestore(from, "Restaurant");
 
     const totalPrice = items.reduce((total, item) => {
                  // Extract the numeric part of the price and convert it to a number
@@ -67,20 +68,11 @@ export const stageseventeen = {
     const order_summery =  `🗒️ *New Order #${order} Alert*: \n\nItems Ordered\n *${desserts}* \n\n💰 Total amount:R *${
      totalPrice
    },00*.\n⏳ Delivery time: *50 minutes*. \n` 
+
+
+    number = getObjectNumberByName(resturant_name)
     
-      items.forEach(async tShirt => {
-
-          if(getObjectNumberByName(findItemById(tShirt.id))){
-            
-            number = getObjectNumberByName(findItemById(tShirt.id))
-
-            resid =tShirt.id
-          }
-    
-    
-      });
-
-
+  
     await Whatsapp.sendSimpleButtons({
           message: order_summery,
           recipientPhone: number,
@@ -94,11 +86,6 @@ export const stageseventeen = {
                   id:from+'@'+resid+'&rejected',
               },
  
-              // {
-              //   title:'Reject One by One"',
-              //   id:'rejectOne',
-              // }, 
-         
           ]
       })
 

@@ -118,7 +118,10 @@ export const stageeight= {
             updatedFields: {
               stage: 1,
               itens: [],
-              driver:" "
+              admin:"27716880654",
+              driver:"",
+              errands:"",
+              order_no :"",
               // Add more fields as needed
             },
           };
@@ -128,7 +131,7 @@ export const stageeight= {
               // Stage updated successfully
               await Whatsapp.sendText({
                 message: 'We will welcome you back anytime 😀',
-                recipientPhone: customer,
+                recipientPhone: from,
             }); 
               
               await Whatsapp.sendSimpleButtons({

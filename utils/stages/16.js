@@ -42,6 +42,7 @@ export const stagesixteen = {
       from: from,
       updatedFields: {
         stage: 0,
+        admin:"27716880654",
         // Add more fields as needed
       },
     };
@@ -105,13 +106,7 @@ export const stagesixteen = {
       console.error('Error getting documents:', error);
     });
 
-
-
     const driverValueToSearch = from;
-
-
-    // Delete the document with the retrieved storageID
-
 
     try {
       // Delete the document with the specified ID
@@ -123,7 +118,6 @@ export const stagesixteen = {
         recipientPhone: from,
 
     }); 
-
 
 
     await Whatsapp.sendText({
@@ -139,24 +133,9 @@ export const stagesixteen = {
       console.error('Error:', error);
     }
 
-
-    
-
-    
-
-  
-    
-
-   
-
-
-
-
   })
 
 
-  
- 
   },
   
 };

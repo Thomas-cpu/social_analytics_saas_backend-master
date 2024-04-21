@@ -39,26 +39,107 @@ export const finalStage = {
   async exec({ from,incomingMessage,message,Whatsapp,recipientName }) {
 
 
-   // const afterAt = incomingMessage.button_reply.id.split('@')[1];
+    if(incomingMessage.button_reply){
 
-  //  const result = afterAt.split('&')[0];
+  
+    if(incomingMessage.button_reply.id=="Cancel"){
 
-     let restaurant = await getFieldValueFromFirestore(incomingMessage.button_reply.id.split('@')[0], "Restaurant");
-    
+             const updateParams = {
+            from: from,
+            updatedFields: {
+              stage: 1,
+              errands:"",
+              order_sent:"No",
+              order_no :"",
+              admin:"27716880654",
+              items:[]
+            },
+          };
+
+          updateStageInFirestore(updateParams)
+            .then(async () => {
+              try {
+
+                  await Whatsapp.sendSimpleButtons({
+                    message:
+                      " Molweni " +
+                      recipientName +
+                      "😀\n\nWe are open Monday - Sunday from 10am - 7pm⏰\n\nHow can we help you today?",
+                    recipientPhone: from,
+                    listOfButtons: [
+                      {
+                        title: "Request Delivery",
+                        id: "Errands",
+                      },
+                      {
+                        title: "Order food",
+                        id: "Shopping",
+                      },
+                    ],
+                  });
+
+                  var driver = await getFieldValueFromFirestore(from, "driver");
+
+                  var Order = await getFieldValueFromFirestore(from, "order_no");
+        
+                  var address = await getFieldValueFromFirestore(from, "address");
+
+                  var admin = await getFieldValueFromFirestore(from, "admin");
+
+               
+        
+                  await Whatsapp.sendText({
+        
+                    message: `Order #${Order}, address: ${address} has been cancelled`,
+                    recipientPhone: driver,
+                    
+                  }); 
+        
+        
+                  await Whatsapp.sendText({
+        
+                    message: `Order #${Order}, address: ${address} has been cancelled`,
+                    recipientPhone:admin,
+                    
+                  }); 
+        
+
+              } catch (error) {
+                console.error("Error in initialStage.exec:", error);
+              }
+            })
+      
+
+
+    } else if(incomingMessage.button_reply.id=="Continue"){
+
+         
+      await Whatsapp.sendText({
+  
+        message: `Thank you for your response, We will continue with your order`,
+        recipientPhone: from,
+        
+      }); 
+
+
+    }else{
+
+
+      let restaurant = await getFieldValueFromFirestore(incomingMessage.button_reply.id.split('@')[0], "Restaurant");
+
+
       const updateParams = {
         from: incomingMessage.button_reply.id.split('@')[0],
         updatedFields: {
           stage: 5,
           errands :"an Order at "+restaurant
-          // Add more fields as needed
         },
       };
 
       updateStageInFirestore(updateParams)
         .then(async () => {
           try {
-            //storage[from].stage = 1;
-
+       
             var driver = await getFieldValueFromFirestore(incomingMessage.button_reply.id.split('@')[0], "driver");
     
             var Order_No = await getFieldValueFromFirestore(incomingMessage.button_reply.id.split('@')[0], "order_no");
@@ -71,7 +152,6 @@ export const finalStage = {
                 recipientPhone: incomingMessage.button_reply.id.split('@')[0],
             });
             
-
                   
           await Whatsapp.sendSimpleButtons({
 
@@ -97,11 +177,39 @@ export const finalStage = {
 
           } catch (error) {
             console.error("Error in initialStage.exec:", error);
-            // Handle the error as needed, such as logging, sending a response, etc.
           }
         })
 
 
 
+    }
+
+
+    
+     
+    }else{
+
+
+      await Whatsapp.sendSimpleButtons({
+        message: 'Your order has been sent. It will be processed shortly. 😀',
+        recipientPhone: from,
+        listOfButtons: [
+            
+          {
+            title: "Continue Order",
+            id: "Continue",
+          },
+          {
+            title: "Cancel Order",
+            id: "Cancel",
+          },
+         
+        ],
+      });
+
+
+    }
+
+    
   },
 };

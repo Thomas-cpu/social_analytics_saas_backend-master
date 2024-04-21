@@ -16,7 +16,8 @@ import { stagefourteen} from './14.js';
 import { stagefiveteen} from './15.js';
 import { stagesixteen} from './16.js';
 import { stageseventeen} from './17.js';
+import { stageeightteen} from './18.js';
 
 export { initialStage, stageOne, stageTwo, stageThree, stageFour,stagesix,
     finalStage,stageseven,stageeight,stagenine,stageten,stageeleven,
-    stageetwelve,stagethirtteen,stagefourteen,stagefiveteen,stagesixteen,stageseventeen};
+    stageetwelve,stagethirtteen,stagefourteen,stagefiveteen,stagesixteen,stageseventeen,stageeightteen};

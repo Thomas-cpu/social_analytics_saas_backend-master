@@ -13,7 +13,10 @@ export const stageseven = {
           from: from,
           updatedFields: {
             stage: 1,
+            admin:"27716880654",
             itens: [],
+            order_no :"",
+            errands:"",
             // Add more fields as needed
           },
         };
@@ -113,10 +116,6 @@ export const stageseven = {
                 title: "Confirm",
                 id: "Confirm",
               },
-              // {
-              //   title: "Change Request",
-              //   id: "changerequest",
-              // },
               {
                 title: "Cancel Request",
                 id: "cancelrequest",

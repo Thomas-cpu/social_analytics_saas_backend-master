@@ -17,6 +17,10 @@ import Store from "../utils/store.js";
 var Store1 = new Store();
 const CustomerSession = new Map();
 
+var sendMessessage = false;
+
+var clientnumber = ""
+
 import WhatsappCloudAPI from "whatsappcloudapi_wrapper";
 import { storage } from "../utils/storage.js";
 
@@ -73,9 +77,9 @@ let number;
 
 let Whatsapp = new WhatsappCloudAPI({
   accessToken:
-    "EAAMdhVfHQAsBOZCloZCHZCUjvmmuZCXkf53YlW3837snYIl7zG4cnZBJD9JS7tV98otfLIySw9zsZB72PHVappK5XWbWfjl0RoZAn01bW5Gu7XveoxsyaIZCwj3sh1gTMUxRkZBTKlsocS9GRDIxEweQRlXYhgAlAZAZCZBKTwtnhspHVcHTTNT3pHDHFbIhHhGEYA9MVctX95jFQR14zEaQDpQZD",
-  senderPhoneNumberId: "223657650822923",
-  WABA_ID: "230692063450896",
+    "EAAMdhVfHQAsBO70IHpNgi5xxTpbOZA2kvZCwnn8WFDwArvquQHZA15a4lejm48LAjhhwJKKyi5yZCT4Fb6tCvuwVStEisQZAX2A9BK4kafwjAHcsqZAarajPHtVsZAY2KSPx2PpAxow3bJrBxsgCJBoF9Q6ztwfZAMT8XaMC6Laj1DfcNynw7CC1gmy80vcXDHYq9mKn8bZClJmwqvQklnv8ZD",
+  senderPhoneNumberId: "166159806581123",
+  WABA_ID: "145025998701740",
 });
 
 router.get("/callback", (req, res) => {
@@ -164,6 +168,7 @@ router.post("/callback", async (req, res) => {
           });
       } else {
         if (incomingMessage.button_reply) {
+
           doesDocumentExist(incomingMessage.button_reply.id.slice(0, 11))
             .then(async (exists) => {
               if (exists && !restaurants[recipientPhone]) {
@@ -173,6 +178,7 @@ router.post("/callback", async (req, res) => {
 
                 getStage(fromData)
                   .then(async (currentStage) => {
+
                     console.log("Current Stage:", currentStage);
 
                     // Check if the currentStage is 9 or 5
@@ -225,7 +231,7 @@ router.post("/callback", async (req, res) => {
                             }, 0);
     
                             The_messeage =
-                              "Food Order Request\n\n" +
+                              "Request\n\n" +
                               "REQUEST : " +
                               errands +
                               "\n\nADDRESS : " +
@@ -235,11 +241,9 @@ router.post("/callback", async (req, res) => {
                           }
 
 
-                          //console.log(incomingMessage.from.phone);
 
                           console.log("sending order to the driver");
 
-                          console.log( )
     
                           const updateParams = {
                             from: incomingMessage.button_reply.id.slice(0, 11),
@@ -331,34 +335,37 @@ router.post("/callback", async (req, res) => {
                                   order_no: randomOrderNumber,
                                 },
                               };
+
+                              
+                            updateStageInFirestore(updatesomestuff)
+                            .then(async () => {
+
+                              await Whatsapp.sendText({
+                                message:
+                                  "Your orderNo#" +
+                                  randomOrderNumber +
+                                  " 🚗 Your driver is " +
+                                  drivername +
+                                  " and he is on his way to you!",
+                                recipientPhone: incomingMessage.button_reply.id.slice(
+                                  0,
+                                  11
+                                ),
+                              });
+
+                            })
+    
+                            .catch((error) => {
+                              console.error("Error:", error);
+                            });
                         
 
                           }
                       
   
-                            updateStageInFirestore(updatesomestuff)
-                              .then(async () => {
-
-                                await Whatsapp.sendText({
-                                  message:
-                                    "Your orderNo#" +
-                                    randomOrderNumber +
-                                    " 🚗 Your driver is " +
-                                    drivername +
-                                    " and he is on his way to you!",
-                                  recipientPhone: incomingMessage.button_reply.id.slice(
-                                    0,
-                                    11
-                                  ),
-                                });
-
-                              })
-      
-                              .catch((error) => {
-                                console.error("Error:", error);
-                              });
                              
                         }else{
+
                             await Whatsapp.sendText({
                               message:"Sorry this trip has been taken by another driver",
                               recipientPhone: incomingMessage.from.phone,
@@ -377,15 +384,34 @@ router.post("/callback", async (req, res) => {
 
                 number = incomingMessage.button_reply.id.slice(0, 11);
 
+               
+
                 var driver = await getFieldValueFromFirestore(number, "driver");
 
-                if (driver.trim() === "") {
+                
+
+
+                if (driver.trim() !== "" || driver.trim()==="") {
 
                   const fromData = { from: number };
 
+                  console.log("The driver is:" ,driver)
+
                   getStage(fromData)
-                    .then((currentStage) => {
+                    .then(async (currentStage) => {
+
+
                       if (currentStage == 4) {
+
+                        await Whatsapp.sendText({
+                          message: 'Now wait for the order to be finished by resturant you will be notified when to fetch it',
+                          recipientPhone: recipientPhone,
+
+                         }); 
+                        
+
+                         
+
                         const updateParams = {
                           from: number,
                           updatedFields: {
@@ -395,6 +421,7 @@ router.post("/callback", async (req, res) => {
 
                         updateStageInFirestore(updateParams)
                           .then(async () => {
+                            
                             const messageResponse = stages[17].stage.exec({
                               from: number,
                               message: message,
@@ -402,11 +429,14 @@ router.post("/callback", async (req, res) => {
                               recipientName: recipientName,
                               incomingMessage: incomingMessage,
                             });
+
                           })
+                          
                           .catch((error) => {
                             console.error("Error:", error);
                           });
                       }
+
                     })
                     .catch((error) => {
                       console.error("Error:", error);
@@ -480,13 +510,39 @@ router.post("/callback", async (req, res) => {
             });
         }else{
 
+          if(sendMessessage==true){
+
+
+            await Whatsapp.sendText({
+              message:incomingMessage.text.body,
+              recipientPhone: clientnumber,
+            });
+
+
+            await Whatsapp.sendText({
+              message:incomingMessage.text.body,
+              recipientPhone: '27716880654',
+            });
+
+
+            sendMessessage =false;
+
+            clientnumber="";
+
+            sendMessessage = false;
+
+          }else{
+
+            await Whatsapp.sendText({
+
+              message:"You are now online ready to receive clients orders",
+              recipientPhone: incomingMessage.from.phone,
+  
+            });
+          
+          }
             
-          await Whatsapp.sendText({
-
-            message:"You are now online ready to receive clients orders",
-            recipientPhone: incomingMessage.from.phone,
-
-          });
+        
 
         }
       }
@@ -510,6 +566,8 @@ router.post("/callback", async (req, res) => {
             })
 
             .then(async () => {
+
+
               await Whatsapp.sendText({
                 message:
                   "Hi " +
@@ -517,6 +575,8 @@ router.post("/callback", async (req, res) => {
                   " You are now online ready to receive orders",
                 recipientPhone: recipientPhone,
               });
+
+
 
               console.log("Document updated successfully.");
             })
@@ -553,6 +613,7 @@ router.post("/callback", async (req, res) => {
 
                   updateStageInFirestore(updateParams)
                     .then(async () => {
+
                       var items = await getFieldValueFromFirestore(
                         incomingMessage.button_reply.id.split("@")[0],
                         "items"
@@ -592,22 +653,95 @@ router.post("/callback", async (req, res) => {
 
                   //*///////
                 } else if (incomingMessage.button_reply.id.match(/reject/)) {
-                  updateStatusById(
-                    storage[incomingMessage.button_reply.id.split("@")[0]]
-                      .itens,
-                    result,
-                    "Reject"
+
+
+                  var items = await getFieldValueFromFirestore(
+                    incomingMessage.button_reply.id.split("@")[0],
+                    "items"
                   );
+
+                  var Order_No = await getFieldValueFromFirestore(
+                    incomingMessage.button_reply.id.split("@")[0],
+                    "order_no"
+                  );
+
+                  var driver = await getFieldValueFromFirestore(
+                    incomingMessage.button_reply.id.split("@")[0],
+                    "driver"
+                  );
+
+                  var admin = await getFieldValueFromFirestore(
+                    incomingMessage.button_reply.id.split("@")[0],
+                    "admin"
+                  );
+
+                  updateStatusById(items, result, "rejected");
 
                   await Whatsapp.sendText({
                     message:
-                      "Hi Your order " +
-                      getDescriptionById(menu, result) +
-                      " Has been rejected",
+                      "Hi Your #"+Order_No+" order Has been rejected",
                     recipientPhone: incomingMessage.button_reply.id.split(
                       "@"
                     )[0],
                   });
+
+
+                  await Whatsapp.sendText({
+                    message:
+                      "Hi #"+Order_No+" order has been reject/canceled",
+                    recipientPhone: driver,
+                  });
+
+
+                   await Whatsapp.sendText({
+                    message:
+                      "Hi #"+Order_No+" order Has been reject/canceled",
+                    recipientPhone: admin,
+                  });
+
+
+                    
+                const updateParams = {
+                  from: incomingMessage.button_reply.id.split(
+                    "@"
+                  )[0],
+                  updatedFields: {
+                   stage: 1,
+                   order_sent:"No",
+                   order_no :"",
+                   items:[],
+                   admin:"27716880654",
+
+                  },
+                };
+                
+
+                updateStageInFirestore(updateParams)
+                  .then(async () => {
+                    try {
+
+                      sendMessessage = true;
+
+                      clientnumber = incomingMessage.button_reply.id.split(
+                        "@"
+                      )[0]
+
+                      
+                      await Whatsapp.sendText({
+                        message:
+                          "Please state your reason for rejecting the order ",
+                        recipientPhone: recipientPhone,
+                      });
+
+                    } catch (error) {
+                      console.error("Error in initialStage.exec:", error);
+                      // Handle the error as needed, such as logging, sending a response, etc.
+                    }
+                  })
+
+
+        
+
                 }
               } else {
                 if (incomingMessage.button_reply) {
@@ -618,7 +752,6 @@ router.post("/callback", async (req, res) => {
                   getStage(fromData)
                     .then((currentStage) => {
                       const customernumber = getDriverByNumber(recipientPhone);
-                      //== const currentStage = getStage({ from: incomingMessage.button_reply.id.split('@')[0]});
 
                       const messageResponse = stages[currentStage].stage.exec({
                         from: recipientPhone,

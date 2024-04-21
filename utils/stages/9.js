@@ -27,6 +27,9 @@ export const stagenine = {
       var order = await getFieldValueFromFirestore(customer, "order_no");
 
       var errands = await getFieldValueFromFirestore(customer, "errands");
+
+
+
       
       updateDocument('Orders',order, fieldsToUpdate);
 
@@ -74,16 +77,24 @@ export const stagenine = {
 
     }else if(incomingMessage.button_reply.id ==="cancel"){
 
-          var errands = await getFieldValueFromFirestore(from, "errands");
 
-          var address = await getFieldValueFromFirestore(from, "address");
+      var driver = await getFieldValueFromFirestore(from, "driver");
 
-          
+      var Order = await getFieldValueFromFirestore(from, "order_no");
+
+      var address = await getFieldValueFromFirestore(from, "address");
+
+
+        
         const updateParams = {
           from: from,
           updatedFields: {
             stage: 1,
-            driver:""
+            admin:"27716880654",
+            driver:"",
+            order_no :"",
+            errands:"",
+         
           },
         };
 
@@ -92,9 +103,11 @@ export const stagenine = {
             const fieldName = "errands";
 
             await Whatsapp.sendText({
+
               message: 'We will welcome you back anytime 😀',
               recipientPhone: from,
-          }); 
+
+            }); 
 
           await Whatsapp.sendSimpleButtons({
             message:
@@ -116,17 +129,45 @@ export const stagenine = {
             ],
           });
 
+         
+       
+
+          await Whatsapp.sendText({
+
+            message: `Your order #${Order}, address: ${address} has been cancelled`,
+            recipientPhone: driver,
+            
+          }); 
+
+
+          await Whatsapp.sendText({
+
+            message: `The order #${Order}, address: ${address} has been cancelled`,
+            recipientPhone:27716880654,
+            
+          }); 
+
+
+
           
       })
       .catch((error) => {
         console.error("Error:", error);
       });
 
+    }else if(incomingMessage.button_reply.id ==="continue"){
+
+          await Whatsapp.sendText({
+            message: 'Thank you for your response 😀',
+            recipientPhone: from,
+        }); 
+
     }
 
 
-
    }else{
+
+    /////////
 
     const updateParams = {
       from: from,
@@ -145,9 +186,12 @@ export const stagenine = {
             "Your designated driver is en route to your location.",
           recipientPhone: from,
           listOfButtons: [
-          
             {
-              title: "Cancel Request",
+              title: "Continue delivery",
+              id: "continue",
+            },
+            {
+              title: "Cancel",
               id: "cancel",
             },
           ],
@@ -157,6 +201,9 @@ export const stagenine = {
       .catch((error) => {
         console.error("Error:", error);
       });
+
+
+      ////////////////
 
 
    }
