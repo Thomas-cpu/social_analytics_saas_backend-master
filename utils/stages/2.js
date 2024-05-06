@@ -197,10 +197,11 @@ export const stageTwo = {
         
                   });
 
-                  menu_page++
+                  menu_page++;
 
                   getMenu(menu_page, 9,transformedItems).then(async page1 => {
 
+                    console.log("max page", page1);
 
                     if(page1.maxPage!=menu_page){
 
@@ -355,13 +356,19 @@ export const stageTwo = {
 
                   getMenu(menu_page, 9,transformedItems).then(async page1 => {
 
+                    console.log("max page", page1, "");
 
-                    page1.data.push({
-                        title: "View more",
-                        description: "view more menu items",
-                        id: "more_menu_items"
-                    });
+                    if(menu_page!=page1.maxPage){
 
+                          page1.data.push({
+                            title: "View more",
+                            description: "view more menu items",
+                            id: "more_menu_items"
+                        });
+
+                    }
+
+               
                   
                     await Whatsapp.sendRadioButtons({
                     
@@ -487,11 +494,18 @@ export const stageTwo = {
                     getPage(2, 3).then(async page1 => {
 
                   
+                    if(page1.maxPage>3){
+
                       page1.data.push({
-                      title: "More Restaurants",
-                      description: "More Restaurants",
-                      id: 3
-                    });
+                        title: "More Restaurants",
+                        description: "More Restaurants",
+                        id: 3
+                      });
+
+
+                    }
+
+                     
       
                     previouspage = previous_page-1;
       
@@ -501,7 +515,7 @@ export const stageTwo = {
                     //   id: 1
                     // });
       
-                    console.log(page1.data)
+                   // console.log("The best max",page1.maxPage)
               
       
                     await Whatsapp.sendRadioButtons({
@@ -636,6 +650,8 @@ export const stageTwo = {
 
         if(page >previous_page  && incomingMessage.list_reply.id==page){
 
+         
+
          if(page==maxpage ){
 
               getPage(page, 3).then(async page1 => {
@@ -647,11 +663,11 @@ export const stageTwo = {
 
               previouspage = previous_page-1;
 
-              page1.data.push({
-                title: "Go back",
-                description: "Go back to page "+previouspage,
-                id: previouspage
-              });
+              // page1.data.push({
+              //   title: "Go back",
+              //   description: "Go back to page "+previouspage,
+              //   id: previouspage
+              // });
 
         
 
@@ -679,6 +695,8 @@ export const stageTwo = {
          }else{
 
        ///////////////
+
+          // console.log("page number",page,"maxpage ",maxpage);
 
           getPage(page, 3).then(async page1 => {
 
@@ -873,7 +891,7 @@ export const stageTwo = {
           
                       ],
                   });
-                    console.log(page1.data)
+                   /// console.log(page1.data)
   
                   });
 
@@ -1079,7 +1097,7 @@ export const stageTwo = {
 
           const restaurantData = await fetchRestaurants();
     
-           if(restaurantData.length>9){
+           if(restaurantData.length>0){
 
                 page =1 ;
 
@@ -1135,10 +1153,19 @@ const checkRestaurantExists = async (restaurantName) => {
     const restaurants = await fetchRestaurants();
   
     return restaurants.some(restaurant => {
-      if (restaurant && restaurant.title) {
-        return restaurant.title.toLowerCase() === restaurantName.toLowerCase();
+      if(restaurantName){
+
+        if (restaurant && restaurant.title) {
+          return restaurant.title.toLowerCase() === restaurantName.toLowerCase();
+        }
+        return false;
+
+      }else{
+
+        return false;
+
       }
-      return false;
+     
     });
   };
   
