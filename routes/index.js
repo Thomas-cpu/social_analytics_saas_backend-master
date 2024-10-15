@@ -24,6 +24,17 @@ var clientnumber = ""
 import WhatsappCloudAPI from "whatsappcloudapi_wrapper";
 import { storage } from "../utils/storage.js";
 
+
+function transformNumber(number) {
+  // Convert the number to a string
+  let numberStr = number.toString();
+  
+  // Remove the first two digits and add a '0' at the beginning
+  let transformedNumber = '0' + numberStr.slice(2);
+  
+  return transformedNumber;
+}
+
 function getDescriptionById(object, id) {
   for (const location in object) {
     const products = object[location];
@@ -77,9 +88,9 @@ let number;
 
 let Whatsapp = new WhatsappCloudAPI({
   accessToken:
-    "EAAMdhVfHQAsBOx9ZCpuUD18NjhzdCG4wJ9ARKsqzacE7iBPTSwZAfFZCozcOduGqCO4ZB5MSlHJfJDb404lybVcD0sH0njecMTTJ0gbnydzzfJZC58NuvnLr6OZAhRvePXspY8FJXY0UgHs01l5txR5kg3H6B2LPSiIhrjBSabOVjFZA6sZC3FldapoMyMjpVkQJHZCZBwgqZBZABmno5VsV7E4ZD",
-  senderPhoneNumberId: "223657650822923",
-  WABA_ID: "230692063450896",
+    "EAAYZCezh53gQBO4ZBFbiPEWNZCHF5fZB0SQJnNDY5SfvoF9fjBnjwUwuUgioqV8l0dik5h5Yjn66h4ZCJLjULgZAPhGkptxZCUuU3HklleMJzrz34BW2UxkOY9qiHpNO06gsvocCAYN7rDpmLGwiyLkIJJrylZBpPXEZAZCy2VfszEPO0hfrt1hK5lleFxoKqrPBJWygZDZD",
+  senderPhoneNumberId: "412439775292455",
+  WABA_ID: "455400624318333",
 });
 
 router.get("/callback", (req, res) => {
@@ -212,12 +223,10 @@ router.post("/callback", async (req, res) => {
 
                           if (currentStage === 9) {
                             The_messeage =
-                              "Request Summery\n\n" +
-                              "REQUEST : " +
-                              errands +
+                              "New Delivery Request 🔔"+
                               "\n\nADDRESS : " +
                               address +
-                              "";
+                              "\n\nCustomer no: "+transformNumber(number);
                           } else if (currentStage == 5) {
                             var items = await getFieldValueFromFirestore(
                               number,

@@ -56,7 +56,7 @@ export const stageeight= {
               
                 try {
                   await Whatsapp.sendSimpleButtons({
-                    message: 'REQUEST - ' + errands + '\n\nADDRESS - ' + address + '',
+                    message:`🗒️ New Delivery Request:\n\n${address}`,
                     recipientPhone: value,
                     listOfButtons: [
                       {

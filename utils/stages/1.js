@@ -254,7 +254,7 @@ export const stageOne = {
         updateStageInFirestore(updateParams)
           .then(async () => {
             await Whatsapp.sendSimpleButtons({
-              message: "Please type out your address or descripion of where we will find you📍",
+              message: "Please type out your address or descripion of where we will find you📍.\n\nType instructions e.g I want to buy groceries at shoprite.",
               recipientPhone: from,
               listOfButtons: [
                 {
