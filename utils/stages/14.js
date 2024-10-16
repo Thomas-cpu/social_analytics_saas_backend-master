@@ -2,11 +2,32 @@ import { storage } from '../storage.js';
 import { updateDocument } from '../firebase_config.js'
 import { updateStageInFirestore } from "../stages.js";
 
+
+function transformNumber(number) {
+  // Convert the number to a string
+  let numberStr = number.toString();
+  
+  // Remove the first two digits and add a '0' at the beginning
+  let transformedNumber = '0' + numberStr.slice(2);
+  
+  return transformedNumber;
+}
+
 import { getFieldValueFromFirestore } from "../stages.js";
 
 export const stagefourteen = {
 
   async exec({ from, Whatsapp,customer,incomingMessage}) {
+
+
+    
+    var driver = await getFieldValueFromFirestore(from, "driver");
+
+    var Order = await getFieldValueFromFirestore(from, "order_no");
+
+    var address = await getFieldValueFromFirestore(from, "address");
+
+    var admin = await getFieldValueFromFirestore(from, "admin");
 
 
     if(incomingMessage.button_reply){
@@ -88,35 +109,45 @@ export const stagefourteen = {
             
     }else if(incomingMessage.button_reply.id === 'hasnotcompleed'){
 
+            
 
-      
-        await Whatsapp.sendSimpleButtons({
-          message:
-              "DO you want to?",
+          await Whatsapp.sendText({
+            message: 'We Apologize for the delay, we will do a follow up withe driver',
             recipientPhone: from,
-            listOfButtons: [
-              {
-                title: "Continue delivery",
-                id: "continue",
-              },
-              {
-                title: "Cancel",
-                id: "cancel",
-              },
-            ],
-        });
-         
+        }); 
 
+
+        await Whatsapp.sendSimpleButtons({
+          message: "Trip has not been completed successfully, please do a follow up with the driver\n\nDriver No: "+transformNumber(driver)+"\n\nCustomer No"+transformNumber(from),
+          recipientPhone: '27614458234',
+          listOfButtons: [
+              {
+                  title: 'Query Resolved',
+                  id:'query',
+              },
+
+            
+          ]
+      })
+
+
+      await Whatsapp.sendSimpleButtons({
+        message: "Trip has not been completed successfully, please contact the customer\n\nCustomer no:"+transformNumber(from),
+        recipientPhone: driver,
+        listOfButtons: [
+            {
+                title: 'Query Resolved',
+                id:'query',
+            },
+
+          
+        ]
+    })
+      
+  
     }else if(incomingMessage.button_reply.id==="cancel"){
 
 
-      var driver = await getFieldValueFromFirestore(from, "driver");
-
-      var Order = await getFieldValueFromFirestore(from, "order_no");
-
-      var address = await getFieldValueFromFirestore(from, "address");
-
-      var admin = await getFieldValueFromFirestore(from, "admin");
 
 
       const updateParams = {
@@ -200,17 +231,19 @@ export const stagefourteen = {
         
         await Whatsapp.sendSimpleButtons({
           message:
-              "The driver has finished with your request/order preparing to come back.",
+              "We Apologize for the delay, we will still doing a follow up withe driver\n\n Is the query resolved?",
             recipientPhone: from,
             listOfButtons: [
+              
               {
-                title: "Continue delivery",
-                id: "continue",
+                title: "Yes",
+                id: "driverarrieved",
               },
               {
-                title: "Cancel",
-                id: "cancel",
+                title: "No",
+                id: "No",
               },
+
             ],
         });
    
