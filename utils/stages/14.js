@@ -33,6 +33,30 @@ export const stagefourteen = {
     if(incomingMessage.button_reply){
 
 
+
+    if (incomingMessage.button_reply.id==="No"){
+
+
+      const updateParams = {
+        from: from,
+        updatedFields: {
+          stage: 14,
+          openquery: "Yes"
+          
+          // Add more fields as needed
+        },
+      };
+
+  
+      await Whatsapp.sendText({
+        message: 'We do apologize for this inconvenience, our admin team will contact you',
+        recipientPhone: from,
+
+    }); 
+
+  }
+
+
       if (incomingMessage.button_reply.id === 'driverarrieved') {
 
         const fieldsToUpdate = {
@@ -102,8 +126,6 @@ export const stagefourteen = {
               ],
           });
   
-  
-    
       })
 
             
@@ -118,12 +140,12 @@ export const stagefourteen = {
 
 
         await Whatsapp.sendSimpleButtons({
-          message: "Trip has not been completed successfully, please do a follow up with the driver\n\nDriver No: "+transformNumber(driver)+"\n\nCustomer No"+transformNumber(from),
-          recipientPhone: '27614458234',
+          message: "Trip has not been completed successfully, please do a follow up with the driver\n\nDriver No: "+transformNumber(driver)+"\n\nCustomer No: "+transformNumber(from),
+          recipientPhone: admin,
           listOfButtons: [
               {
                   title: 'Query Resolved',
-                  id:'query',
+                  id:from + '@' + 'query'
               },
 
             
@@ -137,7 +159,7 @@ export const stagefourteen = {
         listOfButtons: [
             {
                 title: 'Query Resolved',
-                id:'query',
+                id:from + '@' + 'query'
             },
 
           
@@ -224,29 +246,29 @@ export const stagefourteen = {
     }
 
 
-
     }else{
 
 
-        
-        await Whatsapp.sendSimpleButtons({
-          message:
-              "We Apologize for the delay, we will still doing a follow up withe driver\n\n Is the query resolved?",
-            recipientPhone: from,
-            listOfButtons: [
-              
-              {
-                title: "Yes",
-                id: "driverarrieved",
-              },
-              {
-                title: "No",
-                id: "No",
-              },
 
-            ],
-        });
-   
+          await Whatsapp.sendSimpleButtons({
+            message:
+                "We Apologize for the delay, we will still doing a follow up withe driver\n\n Is the query resolved?",
+              recipientPhone: from,
+              listOfButtons: [
+                
+                {
+                  title: "Yes",
+                  id: "driverarrieved",
+                },
+                {
+                  title: "No",
+                  id: "No",
+                },
+
+              ],
+          });
+ 
+
 
 
     }

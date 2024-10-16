@@ -180,6 +180,37 @@ router.post("/callback", async (req, res) => {
       } else {
         if (incomingMessage.button_reply) {
 
+
+       
+
+          if(incomingMessage.button_reply.id.split('@')[1]=='query'){
+
+
+                
+                  await Whatsapp.sendSimpleButtons({
+                    message:
+                        "Is the query resolved?",
+                      recipientPhone: incomingMessage.button_reply.id.match(/\d+/)[0],
+                      listOfButtons: [
+                        
+                        {
+                          title: "Yes",
+                          id: "driverarrieved",
+                        },
+                        {
+                          title: "No",
+                          id: "No",
+                        },
+
+                      ],
+                  });
+
+
+          }
+
+
+
+
           doesDocumentExist(incomingMessage.button_reply.id.slice(0, 11))
             .then(async (exists) => {
               if (exists && !restaurants[recipientPhone]) {
@@ -216,7 +247,6 @@ router.post("/callback", async (req, res) => {
                         "driver"
                       );
 
-                      console.log(getcurrentdriver)
 
                         if(getcurrentdriver=="" || getcurrentdriver==recipientPhone){
                              
