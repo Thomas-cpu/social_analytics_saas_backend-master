@@ -2,7 +2,7 @@ import { storage } from '../storage.js';
 import { db } from '../firebase_config.js'
 import { updateDocument } from '../firebase_config.js'
 import { updateStageInFirestore,updateSdriverFirestore } from "../stages.js";
-import { getFieldValueFromFirestore } from "../stages.js";
+import { getFieldValueFromFirestore,getdriverdetails } from "../stages.js";
 import { getStorageIDByDriver } from "../stages.js";
 
 import { deleteDocumentById } from "../stages.js";
@@ -18,6 +18,9 @@ export const stagesixteen = {
     var driver = await getFieldValueFromFirestore(from, "driver");
 
     var rating = await getFieldValueFromFirestore(from, "rating");
+
+
+
 
    // var Comments = await getFieldValueFromFirestore(from, "Comments");
 
@@ -128,12 +131,15 @@ export const stagesixteen = {
   }); 
 
 
+  var trips = await getdriverdetails(driver,"trips")
 
   
   const updateParamsfordriver = {
     from:  driver,
     updatedFields: {
-      onroute: 'false'
+      onroute: 'false',
+      trips: trips+1
+
       // Add more fields as needed
     },
   };
