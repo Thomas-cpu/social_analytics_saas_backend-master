@@ -5,7 +5,7 @@ import { driver } from "../utils/driver.js";
 import { menu } from "../utils/menu.js";
 import { restaurants } from "../utils/restaurants.js";
 import { getFieldValueFromFirestore } from "../utils/stages.js";
-import { updateStageInFirestore } from "../utils/stages.js";
+import { updateStageInFirestore,updateSdriverFirestore } from "../utils/stages.js";
 import { doesDocumentExist } from "../utils/stages.js";
 import { getdriverdetails } from "../utils/stages.js";
 import { getStorageIDByDriver } from "../utils/stages.js";
@@ -282,6 +282,25 @@ router.post("/callback", async (req, res) => {
 
 
                           console.log("sending order to the driver");
+
+
+                          const updateParamsfordriver = {
+                            from:  incomingMessage.from.phone,
+                            updatedFields: {
+                              onroute: "on route to client "+incomingMessage.button_reply.id.slice(0, 11)
+                              // Add more fields as needed
+                            },
+                          };
+
+
+                          updateSdriverFirestore(updateParamsfordriver)
+                           .then(async () => {
+
+
+
+                           });
+
+
 
     
                           const updateParams = {
@@ -572,12 +591,30 @@ router.post("/callback", async (req, res) => {
 
           }else{
 
-            await Whatsapp.sendText({
 
-              message:"You are now online ready to receive clients orders",
-              recipientPhone: incomingMessage.from.phone,
+
+            const updateParams = {
+              from: '27647026483',
+              updatedFields: {
+                status: "online",
+                // Add more fields as needed
+              },
+            };
   
-            });
+            
+            updateSdriverFirestore(updateParams)
+            .then(async () => {
+
+              await Whatsapp.sendText({
+
+                message:"You are now online ready to receive clients orders",
+                recipientPhone: incomingMessage.from.phone,
+    
+              });
+
+            })
+
+    
           
           }
             

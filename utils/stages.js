@@ -25,6 +25,8 @@ import { db } from './firebase_config.js';
 
 import { storage } from './storage.js';
 
+import schedule from 'node-schedule';
+
 
 export const stages = [
   {
@@ -116,6 +118,47 @@ const driver = db.collection('storage');
 
 const drivers = db.collection('drivers');
 
+
+
+
+const updateAllToOffline = async () => {
+  try {
+    const snapshot = await db.collection('drivers') // Replace with your collection name
+      .where('status', '==', 'online')
+      .get();
+
+    if (snapshot.empty) {
+      console.log('No documents found with status "online".');
+      return;
+    }
+
+    const batch = firestore.batch(); // Use batch to update multiple documents at once
+
+    snapshot.forEach(doc => {
+      const docRef = drivers.doc(doc.id);
+      batch.update(docRef, { status: 'offline' });
+    });
+
+    // Commit the batch operation
+    await batch.commit();
+    console.log('All online documents have been set to offline.');
+  } catch (error) {
+    console.error('Error updating documents: ', error);
+  }
+};
+
+// Schedule the job to run at 00:00 South African Time every day
+const job = schedule.scheduleJob({ hour: 0, minute: 0, tz: 'Africa/Johannesburg' }, () => {
+  console.log('Running the update job at 00:00 South African Time...');
+  updateAllToOffline();
+});
+
+// Keep the server running
+console.log('Server is running and the scheduled job is set for 00:00 South African time.');
+
+
+
+
 export async function getStage({ from }) {
   try {
     const doc = await storageCollection.doc(from).get();
@@ -166,6 +209,25 @@ export async function updateStageInFirestore({ from, updatedFields }) {
     throw error; // You may want to handle the error appropriately in your application
   }
 }
+
+
+export async function updateSdriverFirestore({ from, updatedFields }) {
+  try {
+    // Validate parameters
+    if (typeof from !== 'string' || typeof updatedFields !== 'object') {
+      throw new Error('Invalid parameter types. Expecting strings and an object.');
+    }
+
+    // Update the specified fields in the existing document
+    await drivers.doc(from).update(updatedFields);
+
+    console.log(`Fields updated successfully for user ${from}. Updated fields:`, updatedFields);
+  } catch (error) {
+    console.error('Error updating fields in Firestore:', error);
+    throw error; // You may want to handle the error appropriately in your application
+  }
+}
+
 
 export async function getFieldValueFromFirestore(docId, fieldName) {
   try {

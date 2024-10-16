@@ -1,7 +1,7 @@
 import { storage } from '../storage.js';
 import { db } from '../firebase_config.js'
 import { updateDocument } from '../firebase_config.js'
-import { updateStageInFirestore } from "../stages.js";
+import { updateStageInFirestore,updateSdriverFirestore } from "../stages.js";
 import { getFieldValueFromFirestore } from "../stages.js";
 import { getStorageIDByDriver } from "../stages.js";
 
@@ -126,6 +126,23 @@ export const stagesixteen = {
       recipientPhone: driver,
 
   }); 
+
+
+
+  
+  const updateParamsfordriver = {
+    from:  driver,
+    updatedFields: {
+      onroute: 'false'
+      // Add more fields as needed
+    },
+  };
+
+
+  updateSdriverFirestore(updateParamsfordriver)
+   .then(async () => {
+
+   });
 
 
 

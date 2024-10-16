@@ -2,7 +2,7 @@ import { storage } from "../storage.js";
 import { updateDocument } from "../firebase_config.js";
 import { updateStageInFirestore } from "../stages.js";
 
-import { getFieldValueFromFirestore } from "../stages.js";
+import { getFieldValueFromFirestore,updateSdriverFirestore } from "../stages.js";
 
 export const stageten = {
   async exec({ from, Whatsapp, customer, incomingMessage,recipientName }) {
@@ -16,6 +16,24 @@ export const stageten = {
             "The driver has arrived at the location of the client errant/order location!",
           // Add more fields as needed
         };
+
+
+
+        const updateParamsfordriver = {
+          from:  from,
+          updatedFields: {
+            onroute: "The driver has arrived at the location of the client errant/order location!"
+            // Add more fields as needed
+          },
+        };
+  
+  
+        updateSdriverFirestore(updateParamsfordriver)
+         .then(async () => {
+
+         });
+
+         
 
         updateDocument("Orders", order, fieldsToUpdate);
 

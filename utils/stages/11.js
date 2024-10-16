@@ -2,7 +2,7 @@ import { storage } from '../storage.js';
 import { updateDocument } from '../firebase_config.js'
 import { updateStageInFirestore } from "../stages.js";
 
-import { getFieldValueFromFirestore } from "../stages.js";
+import { getFieldValueFromFirestore,updateSdriverFirestore } from "../stages.js";
 
 export const stageeleven = {
 
@@ -18,6 +18,22 @@ export const stageeleven = {
           status: 'The driver has completed the request',
           // Add more fields as needed
         };
+
+      
+        const updateParamsfordriver = {
+          from:  from,
+          updatedFields: {
+            onroute: 'The driver has completed the request'
+            // Add more fields as needed
+          },
+        };
+  
+  
+        updateSdriverFirestore(updateParamsfordriver)
+         .then(async () => {
+
+         });
+        
 
         var order = await getFieldValueFromFirestore(customer, "order_no");
 

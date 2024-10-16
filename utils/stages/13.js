@@ -2,7 +2,7 @@ import { storage } from '../storage.js';
 import { updateDocument } from '../firebase_config.js'
 import { updateStageInFirestore } from "../stages.js";
 
-import { getFieldValueFromFirestore } from "../stages.js";
+import { getFieldValueFromFirestore,updateSdriverFirestore } from "../stages.js";
 
 export const stagethirtteen = {
 
@@ -41,6 +41,22 @@ export const stagethirtteen = {
                 message: 'The driver has arrived at your address',
                 recipientPhone: customer,
             }); 
+
+
+            const updateParamsfordriver = {
+              from:  from,
+              updatedFields: {
+                onroute: 'The driver has arrived at client address!'
+                // Add more fields as needed
+              },
+            };
+      
+      
+            updateSdriverFirestore(updateParamsfordriver)
+             .then(async () => {
+    
+             });
+            
 
 
               await Whatsapp.sendSimpleButtons({
