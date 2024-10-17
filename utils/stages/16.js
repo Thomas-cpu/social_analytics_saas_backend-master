@@ -35,10 +35,6 @@ export const stagesixteen = {
   updateDocument('Orders',order, fieldsToUpdate);
 
 
-
-
-    
-    const collectionName="drivers"
    
 
     const updateParams = {
@@ -53,50 +49,32 @@ export const stagesixteen = {
     updateStageInFirestore(updateParams)
       .then(async () => {
 
-        if(incomingMessage.text.body){
-
-          const newItem = {
-
-            ratings: rating,
-            client:from,
-            Comments:incomingMessage.text.body,
       
-          };
+  const newItem = {
 
-        }else{
+    ratings: rating,
+    client:from,
+    Comments:incomingMessage.text.body,
 
-          const newItem = {
-
-            ratings: rating,
-            client:from,
-            Comments:"The best only from clints I hope",
-      
-          };
+  };
 
 
 
-        }
-
-  
- 
-
-
-  db.collection(collectionName)
+  db.collection("drivers")
   .where('phone', '==', driver)
   .get()
   .then((querySnapshot) => {
     querySnapshot.forEach((doc) => {
     const documentId = doc.id;
     const menuArray = doc.data().rating || [];
-    
-    const trips = doc.data().trips+1;
-
+  
       const updatedMenuArray = [...menuArray, newItem];
 
-        db.collection(collectionName)
+        db.collection("drivers")
           .doc(documentId)
-          .update({ rating: updatedMenuArray ,
-            trips:trips})
+          .update({ rating: updatedMenuArray}
+          
+          )
           .then(() => {
           console.log('Item added successfully');
           })
@@ -112,6 +90,7 @@ export const stagesixteen = {
     const driverValueToSearch = from;
 
     try {
+
       // Delete the document with the specified ID
       await deleteDocumentById(from);
 
