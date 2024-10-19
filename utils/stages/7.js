@@ -93,6 +93,7 @@ export const stageseven = {
         updatedFields: {
           stage: 8,
           address: message,
+          type: "Errands"
         },
       };
 

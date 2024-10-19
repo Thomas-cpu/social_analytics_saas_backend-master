@@ -133,7 +133,7 @@ export const finalStage = {
         updatedFields: {
           stage: 5,
           errands :"an Order at "+restaurant,
-          type:"food"
+          type:"food Order"
         },
       };
 
