@@ -247,6 +247,7 @@ export const stageOne = {
           from: from,
           updatedFields: {
             stage: 7,
+            type:"errand"
             // Add more fields as needed
           },
         };

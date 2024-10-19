@@ -195,17 +195,17 @@ router.post("/callback", async (req, res) => {
 
 
 
-                  const updateParamsfordriver = {
-                    from:  incomingMessage.button_reply.id.match(/\d+/)[0],
-                    updatedFields: {
-                      counterq: 1
-                      // Add more fields as needed
-                    },
-                  };
+                  // const updateParamsfordriver = {
+                  //   from:  incomingMessage.button_reply.id.match(/\d+/)[0],
+                  //   updatedFields: {
+                  //     counterq: 1
+                  //     // Add more fields as needed
+                  //   },
+                  // };
             
             
-                  updateSdriverFirestore(updateParamsfordriver)
-                  .then(async () => {
+                  // updateSdriverFirestore(updateParamsfordriver)
+                  // .then(async () => {
 
 
                     await Whatsapp.sendSimpleButtons({
@@ -227,7 +227,7 @@ router.post("/callback", async (req, res) => {
                     });
 
           
-                  });
+                  // });
 
                
 
@@ -365,6 +365,11 @@ router.post("/callback", async (req, res) => {
                             incomingMessage.button_reply.id.slice(0, 11),
                             "errands"
                           );
+
+                          var type = await getFieldValueFromFirestore(
+                            incomingMessage.button_reply.id.slice(0, 11),
+                            "type"
+                          );
     
                           var address = await getFieldValueFromFirestore(
                             incomingMessage.button_reply.id.slice(0, 11),
@@ -387,14 +392,15 @@ router.post("/callback", async (req, res) => {
                           Order_No: randomOrderNumber,
                           Driver: drivername,
                           client: incomingMessage.button_reply.id.slice(0, 11),
-                          type: "Errands",
+                          type: type,
                           item: errands,
                           drop: errands,
                           destination: address,
                           status: "Driver going to client",
                           time: Timestamp.now(),
                           query:"No query",
-                          queryR:"N/A"
+                          queryR:"N/A",
+                          queryCounter:0
                         })
                         .then(() => {
                           //console.log("Yes"); // Print 'Yes' when the document is successfully added

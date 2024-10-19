@@ -1,6 +1,6 @@
 import { storage } from '../storage.js';
 import { updateDocument } from '../firebase_config.js'
-import { updateStageInFirestore } from "../stages.js";
+import { updateStageInFirestore,updateSdriverFirestore,getdriverdetails } from "../stages.js";
 
 
 function transformNumber(number) {
@@ -19,7 +19,6 @@ export const stagefourteen = {
 
   async exec({ from, Whatsapp,customer,incomingMessage}) {
 
-
     
     var driver = await getFieldValueFromFirestore(from, "driver");
 
@@ -36,23 +35,137 @@ export const stagefourteen = {
 
     if (incomingMessage.button_reply.id==="No"){
 
+/*
+      var order = await getFieldValueFromFirestore(from, "order_no");
+
+      var querycounter = await getorder(order,"queryCounter")
+
+
+      if(querycounter<1){
+
+        
+        querycounter++;
+
+        const fieldsToUpdate = {
+          query :"Yes",
+          queryR:"Not Resolved",
+          queryCounter:querycounter
+          // Add more fields as needed
+        };
+
+
+
+          updateDocument('Orders',order, fieldsToUpdate);
+  
+  
+  
+  
+  
+            await Whatsapp.sendText({
+              message: 'We Apologize for the delay, we will do a follow up with the driver',
+              recipientPhone: from,
+          }); 
+
+
+           
+
+      }else{ */
+
+        
+        
+        await Whatsapp.sendText({
+
+          message: `Trip is complete`,
+          recipientPhone: driver,
+          
+        }); 
+
+        var trips = await getdriverdetails(driver,"trips")
+
+
+
+        
+              const updateParamsfordriver = {
+                from:  driver,
+                updatedFields: {
+                  onroute: 'false',
+                  trips: trips+1
+
+                  // Add more fields as needed
+                },
+              };
+
+
+              updateSdriverFirestore(updateParamsfordriver)
+              .then(async () => {
+
+              });
+
 
       const updateParams = {
         from: from,
         updatedFields: {
-          stage: 14,
-          openquery: "Yes"
-          
+          stage: 1,
+          itens: [],
+          admin:"27716880654",
+          driver:"",
+          errands:"",
+          order_no :"",
           // Add more fields as needed
         },
       };
 
-  
-      await Whatsapp.sendText({
-        message: 'We do apologize for this inconvenience, our admin team will contact you',
-        recipientPhone: from,
+      updateStageInFirestore(updateParams)
+        .then(async () => {
 
-    }); 
+          // Stage updated successfully
+          await Whatsapp.sendText({
+            message: 'We will welcome you back anytime 😀',
+            recipientPhone: from,
+        }); 
+          
+          await Whatsapp.sendSimpleButtons({
+            message:
+              " Molweni " +
+              recipientName +
+              "😀\n\nWe are open Monday - Sunday from 10am - 7pm⏰\n\nHow can we help you today?",
+            recipientPhone: from,
+            listOfButtons: [
+
+              {
+                title: "Request Delivery",
+                id: "Errands",
+              },
+              {
+                title: "Order food",
+                id: "Shopping",
+              },
+           
+            ],
+          });
+          
+        
+         
+       
+
+      
+
+
+        
+
+
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+
+            
+
+
+
+   //   }
+  
+     
 
   }
 
@@ -90,10 +203,6 @@ export const stagefourteen = {
 
 
          }
-
-
-
-        
 
 
 
@@ -168,8 +277,6 @@ export const stagefourteen = {
         var order = await getFieldValueFromFirestore(from, "order_no");
 
         updateDocument('Orders',order, fieldsToUpdate);
-
-
 
 
 

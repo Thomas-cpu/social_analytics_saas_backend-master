@@ -132,7 +132,8 @@ export const finalStage = {
         from: incomingMessage.button_reply.id.split('@')[0],
         updatedFields: {
           stage: 5,
-          errands :"an Order at "+restaurant
+          errands :"an Order at "+restaurant,
+          type:"food"
         },
       };
 
