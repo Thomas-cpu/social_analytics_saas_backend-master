@@ -4,6 +4,22 @@
 
   const driversCollection = db.collection('drivers'); 
   
+  function formatPhoneNumber(phoneNumber) {
+    // Check if the number starts with '0'
+    if (phoneNumber.startsWith('0')) {
+        // Replace the first '0' with '27'
+        return phoneNumber.replace(/^0/, '27');
+    } 
+    // If it starts with '27', return it as is
+    else if (phoneNumber.startsWith('27')) {
+        return phoneNumber;
+    }
+    // If it's in a different format, return it unmodified
+    return phoneNumber;
+}
+
+
+
   export const driver = {};
 
  
@@ -14,17 +30,24 @@
 
     console.log("The best")
 
+
     driversCollection.get()
     .then(snapshot => {
       snapshot.forEach(doc => {
-        const driverId = doc.id;
+        
+        const driverId = doc.data().phone;
         const driverData = doc.data();
+
+       //console.log(driver.data().phone)
         
         driver[driverId] = {
           name: driverData.name,
           status: driverData.status
         };
+
+        //console.log(driver)
       });
+    
     })
     .catch(error => console.error('Error fetching driver data from Firestore:', error));
     

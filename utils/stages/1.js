@@ -145,7 +145,7 @@ export const stageOne = {
 
               await Whatsapp.sendSimpleButtons({
                 message:
-                  "Hi unfortunately there are no resturants available at moment please try again in 10 minutes",
+                  "Hi unfortunately there are no restaurants available at moment please try again in 10 minutes",
                 recipientPhone: from,
                 listOfButtons: [
                   {
@@ -254,7 +254,7 @@ export const stageOne = {
         updateStageInFirestore(updateParams)
           .then(async () => {
             await Whatsapp.sendSimpleButtons({
-              message: "Please type out your address or descripion of where we will find you📍.\n\nType instructions e.g I want to buy groceries at shoprite.",
+              message: "Please type out your address or descripion of where we will find you📍.\n\nAlso type instructions e.g I want to buy groceries at shoprite.",
               recipientPhone: from,
               listOfButtons: [
                 {

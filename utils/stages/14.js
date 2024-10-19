@@ -13,7 +13,7 @@ function transformNumber(number) {
   return transformedNumber;
 }
 
-import { getFieldValueFromFirestore } from "../stages.js";
+import { getFieldValueFromFirestore,getorder } from "../stages.js";
 
 export const stagefourteen = {
 
@@ -59,15 +59,41 @@ export const stagefourteen = {
 
       if (incomingMessage.button_reply.id === 'driverarrieved') {
 
-        const fieldsToUpdate = {
-          status: 'The Order Has been delivered, waiting for client to rate',
-          // Add more fields as needed
-        };
+     
   
 
         var order = await getFieldValueFromFirestore(from, "order_no");
 
-        updateDocument('Orders',order, fieldsToUpdate);
+        var query = await getorder(order,"queryR")
+
+
+         if(query=="Not Resolved"){
+
+          const fieldsToUpdate = {
+            status: 'The Order Has been delivered, waiting for client to rate',
+            queryR :"Yes"
+            // Add more fields as needed
+          };
+
+          updateDocument('Orders',order, fieldsToUpdate);
+
+                 
+         }else{
+
+
+          const fieldsToUpdate = {
+            status: 'The Order Has been delivered, waiting for client to rate',
+            // Add more fields as needed
+          };
+
+          updateDocument('Orders',order, fieldsToUpdate);
+
+
+         }
+
+
+
+        
 
 
 
@@ -132,9 +158,23 @@ export const stagefourteen = {
     }else if(incomingMessage.button_reply.id === 'hasnotcompleed'){
 
             
+      const fieldsToUpdate = {
+        query :"Yes",
+        queryR:"Not Resolved"
+
+        // Add more fields as needed
+      };
+      
+        var order = await getFieldValueFromFirestore(from, "order_no");
+
+        updateDocument('Orders',order, fieldsToUpdate);
+
+
+
+
 
           await Whatsapp.sendText({
-            message: 'We Apologize for the delay, we will do a follow up withe driver',
+            message: 'We Apologize for the delay, we will do a follow up with the driver',
             recipientPhone: from,
         }); 
 

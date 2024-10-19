@@ -63,8 +63,8 @@ export const stageThree = {
   
         const order_summery =  `🗒️ *ORDER SUMMARY #${randomOrderNumber}*: \n\n*${desserts}* \n\n💰 Total amount: *${
         totalPrice
-      },00*. \n🚚 Delivery fee: R20. \n🏡 Restaurants: ${restaurant} \n⏳ Delivery time: *50 minutes*. \n` +
-            '🔊 ```The driver will come to fecth the money to pay the Resturants.```'
+      },00*. \n🚚 Delivery fee: R20. \n🏡 Restaurants: ${restaurant} \n🏡Address: ${message} \n⏳ Delivery time: *50 minutes*. \n` +
+            '🔊 ```The driver will come fetch the money to pay the restaurants.```'
        
       
           await Whatsapp.sendSimpleButtons({

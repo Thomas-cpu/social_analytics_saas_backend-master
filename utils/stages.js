@@ -114,9 +114,13 @@ export const stages = [
 // Assuming storage is a Firestore collection named 'storage'
 const storageCollection = db.collection('storage');
 
+const orderstorage = db.collection('Orders');
+
 const driver = db.collection('storage');
 
 const drivers = db.collection('drivers');
+
+const resturant = db.collection('restaurant');
 
 
 
@@ -224,6 +228,53 @@ export async function updateSdriverFirestore({ from, updatedFields }) {
     console.log(`Fields updated successfully for user ${from}. Updated fields:`, updatedFields);
   } catch (error) {
     console.error('Error updating fields in Firestore:', error);
+    throw error; // You may want to handle the error appropriately in your application
+  }
+}
+
+
+export async function updatestoreFirestore({ from, updatedFields }) {
+  try {
+    // Validate parameters
+    if (typeof from !== 'string' || typeof updatedFields !== 'object') {
+      throw new Error('Invalid parameter types. Expecting strings and an object.');
+    }
+
+    // Update the specified fields in the existing document
+    await resturant.doc(from).update(updatedFields);
+
+    console.log(`Fields updated successfully for user ${from}. Updated fields:`, updatedFields);
+  } catch (error) {
+    console.error('Error updating fields in Firestore:', error);
+    throw error; // You may want to handle the error appropriately in your application
+  }
+}
+
+
+
+
+export async function getorder(docId, fieldName) {
+  try {
+    // Validate parameters
+    if (typeof docId !== 'string' || typeof fieldName !== 'string') {
+      throw new Error('Invalid parameter types. Expecting strings.');
+    }
+
+    // Retrieve the document from Firestore
+    const docSnapshot = await orderstorage.doc(docId).get();
+
+    // Check if the document exists
+    if (docSnapshot.exists) {
+      // Get the field value
+      const fieldValue = docSnapshot.get(fieldName);
+
+      // Return the field value
+      return fieldValue;
+    } else {
+      throw new Error(`Document with ID ${docId} not found in Firestore.`);
+    }
+  } catch (error) {
+    console.error('Error retrieving field value from Firestore:', error);
     throw error; // You may want to handle the error appropriately in your application
   }
 }

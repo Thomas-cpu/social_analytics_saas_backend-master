@@ -32,8 +32,7 @@ export const stageten = {
          .then(async () => {
 
          });
-
-         
+        
 
         updateDocument("Orders", order, fieldsToUpdate);
 

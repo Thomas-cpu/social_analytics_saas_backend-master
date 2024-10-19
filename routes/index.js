@@ -5,11 +5,17 @@ import { driver } from "../utils/driver.js";
 import { menu } from "../utils/menu.js";
 import { restaurants } from "../utils/restaurants.js";
 import { getFieldValueFromFirestore } from "../utils/stages.js";
-import { updateStageInFirestore,updateSdriverFirestore } from "../utils/stages.js";
+import { updateStageInFirestore,updateSdriverFirestore,updatestoreFirestore } from "../utils/stages.js";
 import { doesDocumentExist } from "../utils/stages.js";
 import { getdriverdetails } from "../utils/stages.js";
 import { getStorageIDByDriver } from "../utils/stages.js";
 import { db } from "../utils/firebase_config.js";
+import {
+  getFirestore,
+  Timestamp,
+  FieldValue,
+  QueryDocumentSnapshot,
+} from 'firebase-admin/firestore';
 
 import express from "express";
 const router = express.Router();
@@ -159,6 +165,10 @@ router.post("/callback", async (req, res) => {
 
       let message_id = incomingMessage.message_id;
 
+      console.log(recipientPhone)
+
+      console.log(restaurants[recipientPhone])
+
       if (!driver[recipientPhone] && !restaurants[recipientPhone]) {
         const fromData = { from: recipientPhone };
 
@@ -180,30 +190,46 @@ router.post("/callback", async (req, res) => {
       } else {
         if (incomingMessage.button_reply) {
 
-
-       
-
           if(incomingMessage.button_reply.id.split('@')[1]=='query'){
 
 
-                
-                  await Whatsapp.sendSimpleButtons({
-                    message:
-                        "Is the query resolved?",
-                      recipientPhone: incomingMessage.button_reply.id.match(/\d+/)[0],
-                      listOfButtons: [
-                        
-                        {
-                          title: "Yes",
-                          id: "driverarrieved",
-                        },
-                        {
-                          title: "No",
-                          id: "No",
-                        },
 
-                      ],
+
+                  const updateParamsfordriver = {
+                    from:  incomingMessage.button_reply.id.match(/\d+/)[0],
+                    updatedFields: {
+                      counterq: 1
+                      // Add more fields as needed
+                    },
+                  };
+            
+            
+                  updateSdriverFirestore(updateParamsfordriver)
+                  .then(async () => {
+
+
+                    await Whatsapp.sendSimpleButtons({
+                      message:
+                          "Is the query resolved?",
+                        recipientPhone: incomingMessage.button_reply.id.match(/\d+/)[0],
+                        listOfButtons: [
+                          
+                          {
+                            title: "Yes",
+                            id: "driverarrieved",
+                          },
+                          {
+                            title: "No",
+                            id: "No",
+                          },
+  
+                        ],
+                    });
+
+          
                   });
+
+               
 
 
           }
@@ -270,7 +296,7 @@ router.post("/callback", async (req, res) => {
                             }, 0);
     
                             The_messeage =
-                              "Request\n\n" +
+                              "Order Request\n\n" +
                               "REQUEST : " +
                               errands +
                               "\n\nADDRESS : " +
@@ -366,6 +392,9 @@ router.post("/callback", async (req, res) => {
                           drop: errands,
                           destination: address,
                           status: "Driver going to client",
+                          time: Timestamp.now(),
+                          query:"No query",
+                          queryR:"N/A"
                         })
                         .then(() => {
                           //console.log("Yes"); // Print 'Yes' when the document is successfully added
@@ -391,6 +420,7 @@ router.post("/callback", async (req, res) => {
                                 from: incomingMessage.button_reply.id.slice(0, 11),
                                 updatedFields: {
                                   order_no: randomOrderNumber,
+                                  
                                 },
                               };
 
@@ -462,7 +492,7 @@ router.post("/callback", async (req, res) => {
                       if (currentStage == 4) {
 
                         await Whatsapp.sendText({
-                          message: 'Now wait for the order to be finished by resturant you will be notified when to fetch it',
+                          message: 'Now wait for the order to be finished by restaurant you will be notified when to fetch it',
                           recipientPhone: recipientPhone,
 
                          }); 
@@ -592,27 +622,52 @@ router.post("/callback", async (req, res) => {
           }else{
 
 
-
+            //! && !restaurants[recipientPhone]
             const updateParams = {
-              from: '27647026483',
+              from: incomingMessage.from.phone,
               updatedFields: {
                 status: "online",
                 // Add more fields as needed
               },
             };
+
+
+            if(driver[recipientPhone]){
+
+              updateSdriverFirestore(updateParams)
+              .then(async () => {
   
-            
-            updateSdriverFirestore(updateParams)
-            .then(async () => {
+                await Whatsapp.sendText({
+  
+                  message:"You are now online ready to receive clients orders",
+                  recipientPhone: incomingMessage.from.phone,
+      
+                });
+  
+              })
+  
 
-              await Whatsapp.sendText({
+            }else{
 
-                message:"You are now online ready to receive clients orders",
-                recipientPhone: incomingMessage.from.phone,
-    
-              });
 
-            })
+              updatestoreFirestore(updateParams)
+              .then(async () => {
+  
+                await Whatsapp.sendText({
+  
+                  message:"You are now online ready to receive clients orders",
+                  recipientPhone: incomingMessage.from.phone,
+      
+                });
+  
+              })
+
+
+            }
+
+          
+
+
 
     
           
@@ -644,13 +699,13 @@ router.post("/callback", async (req, res) => {
             .then(async () => {
 
 
-              await Whatsapp.sendText({
-                message:
-                  "Hi " +
-                  recipientName +
-                  " You are now online ready to receive orders",
-                recipientPhone: recipientPhone,
-              });
+              // await Whatsapp.sendText({
+              //   message:
+              //     "Hi " +
+              //     recipientName +
+              //     " You are now online ready to receive orders",
+              //   recipientPhone: recipientPhone,
+              // });
 
 
 

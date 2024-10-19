@@ -181,6 +181,8 @@ export const stageFour = {
 
             var restaurant  = await getFieldValueFromFirestore(from, "Restaurant");
 
+            var address  = await getFieldValueFromFirestore(from, "address");
+
             items.map((item, index) => {
               if (index == items.length - 1) {
                 desserts += index+'-'+item.description + '.';
@@ -203,8 +205,8 @@ export const stageFour = {
 
           const order_summery =  `🗒️ *New Order Alert*: \n\n*${desserts}* \n\n💰 Total amount: *${
           totalPrice
-        },00*. \n🚚 Delivery fee: R20. \n🏡 Restaurants: ${restaurant} \n⏳ Delivery time: *50 minutes*. \n` +
-              '🔊 ```You will go the client location to fetch money for the resturant```'
+        },00*. \n🚚 Delivery fee: R20. \n🏡 Restaurants: ${restaurant} \n🏡Address: ${address}\n⏳ Delivery time: *50 minutes*. \n` +
+              '🔊 ```You will go to the client location to fetch money for the restaurant```'
 
 
               Object.keys(driver).map(async (value) => {

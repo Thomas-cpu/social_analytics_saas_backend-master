@@ -566,7 +566,7 @@ export const stageTwo = {
           updateStageInFirestore(updateParams)
             .then(async () => {
               await Whatsapp.sendSimpleButtons({
-                message: "Please type out your address or descripion of where we will find you📍.\n\nType instructions e.g I want to buy groceries at shoprite.",
+                message: "Please type out your address or descripion of where we will find you📍.\n\nAlso Type instructions e.g I want to buy groceries at shoprite.",
                 recipientPhone: from,
                 listOfButtons: [
                   {
@@ -929,7 +929,7 @@ export const stageTwo = {
            const order_summery =  `🗒️ *YOUR ORDER*: \n\n*${desserts}* \n\n💰 Total amount: *${
             totalPrice
           },00*. \n🚚 Delivery fee: R20. \n🏡 Restaurants: ${restaurant} \n⏳ Delivery time: *50 minutes*. \n` +
-                '🔊 ```The driver will come to fecth the money to pay the Resturants.```'
+                '🔊 ```The driver will come fetch the money to pay the restaurants.```'
 
             //console.log(order_summery)
 

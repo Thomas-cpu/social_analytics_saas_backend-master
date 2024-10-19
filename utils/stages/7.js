@@ -107,7 +107,7 @@ export const stageseven = {
            
           await Whatsapp.sendSimpleButtons({
             message:
-              "🏠Address - " +
+              "🏠Address and instructions - " +
               address+
               "\n-----------------------------------\n",
             recipientPhone: from,
