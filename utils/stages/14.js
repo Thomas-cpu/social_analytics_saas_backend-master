@@ -120,7 +120,7 @@ export const stagefourteen = {
 
           // Stage updated successfully
           await Whatsapp.sendText({
-            message: 'We will welcome you back anytime 😀',
+            message: 'Our customer support team will resolved your query and contact you back.',
             recipientPhone: from,
         }); 
           
@@ -397,24 +397,57 @@ export const stagefourteen = {
 
 
 
-          await Whatsapp.sendSimpleButtons({
-            message:
-                "We Apologize for the delay, we will still doing a follow up withe driver\n\n Is the query resolved?",
-              recipientPhone: from,
-              listOfButtons: [
-                
-                {
-                  title: "Yes",
-                  id: "driverarrieved",
-                },
-                {
-                  title: "No",
-                  id: "No",
-                },
+      
+      var query = await getorder(order,"query")
 
-              ],
-          });
- 
+
+      if(query=="Yes"){
+
+  
+        
+        await Whatsapp.sendSimpleButtons({
+          message:
+              "We Apologize for the delay, we will still doing a follow up withe driver\n\n Is the query resolved?",
+            recipientPhone: from,
+            listOfButtons: [
+              
+              {
+                title: "Yes",
+                id: "driverarrieved",
+              },
+              {
+                title: "No",
+                id: "No",
+              },
+
+            ],
+        });
+
+
+
+
+      }else{
+
+        await Whatsapp.sendSimpleButtons({
+          message: 'Has the driver completed your request ?',
+          recipientPhone: customer,
+          listOfButtons: [
+              {
+                  title: 'Yes ✅',
+                  id:'driverarrieved',
+              },
+              {
+                title: 'No ❌',
+                id:'hasnotcompleed',
+              },
+        
+          ]
+      })
+   
+
+
+      }
+
 
 
 

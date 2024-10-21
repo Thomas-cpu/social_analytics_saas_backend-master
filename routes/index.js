@@ -382,45 +382,79 @@ router.post("/callback", async (req, res) => {
                           );
 
 
+
                           
-                      const randomOrderNumber = generateRandomOrderNumber();
+                      var randomOrderNumber = generateRandomOrderNumber();
 
+                      var order_no = await getFieldValueFromFirestore(incomingMessage.button_reply.id.slice(0, 11), "order_no");
 
-                      db.collection("Orders")
-                        .doc(randomOrderNumber)
-                        .set({
-                          Order_No: randomOrderNumber,
-                          Driver: drivername,
-                          client: incomingMessage.button_reply.id.slice(0, 11),
-                          type: type,
-                          item: errands,
-                          drop: errands,
-                          destination: address,
-                          status: "Driver going to client",
-                          time: Timestamp.now(),
-                          query:"No query",
-                          queryR:"N/A",
-                          queryCounter:0
-                        })
-                        .then(() => {
-                          //console.log("Yes"); // Print 'Yes' when the document is successfully added
-                        })
-                        .catch((error) => {
-                          console.error(
-                            "Error adding document to Firestore:",
-                            error
-                          );
-                        });
+                     // if(order_no)
 
                         
 
-                         var order_no = await getFieldValueFromFirestore(incomingMessage.button_reply.id.slice(0, 11), "order_no");
 
                           if(order_no){
 
-                            randomOrderNumber = order_no;
+
+                              db.collection("Orders")
+                              .doc(order_no)
+                              .set({
+                                Order_No: order_no,
+                                Driver: drivername,
+                                client: incomingMessage.button_reply.id.slice(0, 11),
+                                type: type,
+                                item: errands,
+                                drop: errands,
+                                destination: address,
+                                status: "Driver going to client",
+                                time: Timestamp.now(),
+                                query:"No query",
+                                queryR:"N/A",
+                                queryCounter:0
+                              })
+                              .then(() => {
+                                //console.log("Yes"); // Print 'Yes' when the document is successfully added
+                                console.log(randomOrderNumber+" it is true added aswell")
+                              })
+                              .catch((error) => {
+                                console.error(
+                                  "Error adding document to Firestore:",
+                                  error
+                                );
+                              });
+
+
+                  
 
                           }else{
+
+                              
+                            db.collection("Orders")
+                            .doc(randomOrderNumber)
+                            .set({
+                              Order_No: randomOrderNumber,
+                              Driver: drivername,
+                              client: incomingMessage.button_reply.id.slice(0, 11),
+                              type: type,
+                              item: errands,
+                              drop: errands,
+                              destination: address,
+                              status: "Driver going to client",
+                              time: Timestamp.now(),
+                              query:"No query",
+                              queryR:"N/A",
+                              queryCounter:0
+                            })
+                            .then(() => {
+                              //console.log("Yes"); // Print 'Yes' when the document is successfully added
+                            })
+                            .catch((error) => {
+                              console.error(
+                                "Error adding document to Firestore:",
+                                error
+                              );
+                            });
+                        
 
                               var updatesomestuff = {
                                 from: incomingMessage.button_reply.id.slice(0, 11),
@@ -503,9 +537,6 @@ router.post("/callback", async (req, res) => {
 
                          }); 
                         
-
-                         
-
                         const updateParams = {
                           from: number,
                           updatedFields: {
@@ -835,6 +866,9 @@ router.post("/callback", async (req, res) => {
                       "Hi #"+Order_No+" order Has been reject/canceled",
                     recipientPhone: admin,
                   });
+
+
+                  
 
 
                     
