@@ -397,7 +397,8 @@ export const stagefourteen = {
 
 
 
-      
+      var order = await getFieldValueFromFirestore(from, "order_no");
+
       var query = await getorder(order,"query")
 
 
@@ -430,7 +431,7 @@ export const stagefourteen = {
 
         await Whatsapp.sendSimpleButtons({
           message: 'Has the driver completed your request ?',
-          recipientPhone: customer,
+          recipientPhone: from,
           listOfButtons: [
               {
                   title: 'Yes ✅',
