@@ -136,7 +136,7 @@ const updateAllToOffline = async () => {
       return;
     }
 
-    const batch = firestore.batch(); // Use batch to update multiple documents at once
+    const batch = db.batch(); // Use batch to update multiple documents at once
 
     snapshot.forEach(doc => {
       const docRef = drivers.doc(doc.id);
